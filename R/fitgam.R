@@ -1,6 +1,6 @@
-fit_gam <- function(df_tract, k=40, family="auto",
-                           tract_name="", out_dir=".",
-                           save_output=FALSE) {
+fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
+                    tract_name="", out_dir=".",
+                    save_output=FALSE) {
   # Calculate GAM for tract node metrics (e.g. FA, MD)
   #
   # This function has a series of steps:
@@ -10,6 +10,8 @@ fit_gam <- function(df_tract, k=40, family="auto",
   #
   # Arguments:
   #   df_tract = dataframe of node metric values for single tract
+  #   target = diffusion metric to model
+  #
   #   k = dimension of the basis used to represent the node smoothing term.
   #       If k='auto', this function will attempt to find the best
   #   family = distribution to use for the gam. Must be either 'gamma', 'beta', or 'auto'
@@ -31,7 +33,7 @@ fit_gam <- function(df_tract, k=40, family="auto",
     linkfamily <- betar(link = "logit")
   } else if (tolower(family) == "auto") {
     fit.beta <- fitdistrplus::fitdist(df_tract[[target]], "beta")
-    fit.gamma <- fitdistrplus::fitdist(df_tract$dti_fa, "gamma")
+    fit.gamma <- fitdistrplus::fitdist(df_tract[[target]], "gamma")
     if (fit.beta$aic < fit.gamma$aic) {
       linkfamily <- mgcv::betar(link = "logit")
     } else {
@@ -52,7 +54,7 @@ fit_gam <- function(df_tract, k=40, family="auto",
 
   # Build formula
   vars <- paste0(covariates, collapse = "+")
-  node_smooth <- paste0("s(nodeId, by = group, k=", k, ")")
+  node_smooth <- paste0("s(nodeID, by = group, k=", k, ")")
   subject_random_effect <- "s(subjectID, bs = \"re\")"
   after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
   dyn_string <- paste0(target, " ~ ", after_tilde)
@@ -62,7 +64,7 @@ fit_gam <- function(df_tract, k=40, family="auto",
   gam_fit <- mgcv::bam(
     formula,
     data = df_tract,
-    family = family,
+    family = linkfamily,
     method = "REML"
   )
 
