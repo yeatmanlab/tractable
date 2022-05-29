@@ -18,4 +18,5 @@ Imports:
     mgcv,
     mgcViz,
     rstatix,
-    tidymv
+    tidymv,
+    tidyr
