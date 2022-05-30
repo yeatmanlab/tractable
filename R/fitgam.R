@@ -71,16 +71,16 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
   if (save_output) {
     capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
-      file = paste0(
-        out_dir, "k_check_gam_", family, "_", tract_name, ".txt"
-      )
+      file = file.path(out_dir, paste0(
+        "k_check_gam_", family, "_", tract_name, ".txt"
+      ))
     )
 
     capture.output(
       mgcv::summary(gam_fit),
-      file = paste0(
-        out_dir, "fit_summary_gam_", family, "_", tract, ".txt"
-      )
+      file = file.path(out_dir, paste0(
+        "fit_summary_gam_", family, "_", tract, ".txt"
+      ))
     )
   }
 
