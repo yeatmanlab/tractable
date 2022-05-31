@@ -112,8 +112,6 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, out_dir) {
 
   plot_filename <- file.path(out_dir, paste0("plot_gam_", tract, ".png"))
 
-  print(plot_filename)
-
   ggplot2::ggsave(
     plot_filename,
     units = "in",

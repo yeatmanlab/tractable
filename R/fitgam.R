@@ -1,3 +1,23 @@
+build_formula <- function(target, covariates, k) {
+  # Build a GAM formula dynamically
+  #
+  # Arguments:
+  #   target = diffusion metric to model
+  #   covariates = list of strings of GAM covariates, not including the smoothing terms over nodes and the random effect due to subjectID
+  #   k = dimension of the basis used to represent the node smoothing term.
+  #
+  # Returns:
+  #   formula = GAM formula
+  vars <- paste0(covariates, collapse = "+")
+  node_smooth <- paste0("s(nodeID, by = group, k=", k, ")")
+  subject_random_effect <- "s(subjectID, bs = \"re\")"
+  after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
+  dyn_string <- paste0(target, " ~ ", after_tilde)
+  formula = as.formula(dyn_string)
+  return(formula)
+}
+
+
 fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
                     tract_name="", out_dir=".",
                     save_output=FALSE) {
@@ -11,7 +31,7 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
   # Arguments:
   #   df_tract = dataframe of node metric values for single tract
   #   target = diffusion metric to model
-  #
+  #   covariates = list of strings of GAM covariates, not including the smoothing terms over nodes and the random effect due to subjectID
   #   k = dimension of the basis used to represent the node smoothing term.
   #       If k='auto', this function will attempt to find the best
   #   family = distribution to use for the gam. Must be either 'gamma', 'beta', or 'auto'
@@ -49,16 +69,47 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
   }
 
   if (k == "auto") {
-    stop("Automatic setting of k is not yet implemented")
+    # Initial k value. This will be multiplied by 2 in the while loop
+    k.model <- 8
+
+    # Initialize k check results to enter the while loop
+    k.indices <- list(0.0, 0.0)
+    k.pvals <- list(0.0, 0.0)
+
+    while (any(k.indices < 1.0) & any(k.pvals <= 0.05)) {
+      k.model <- k.model * 2
+      formula <- build_formula(target = target, covariates = covariates, k = k.model)
+
+      # Fit the gam
+      gam_fit <- mgcv::bam(
+        formula,
+        data = df_tract,
+        family = linkfamily,
+        method = "REML"
+      )
+
+      k.output <- capture.output(mgcv::gam.check(gam_fit, rep = 500))
+      empties <- which(k.output == "")
+      table.start <- empties[length(empties)] + 1
+      end.sep <- which(k.output == "---")
+      table.end <- end.sep[length(end.sep)] - 1
+      table.text = k.output[table.start:table.end]
+      # Get rid of the significance codes
+      table.text <- lapply(table.text, function(line) gsub("[*. ]+$", "", line))
+      table.text <- unlist(table.text)
+      k.check <- read.table(text = table.text)
+      k.indices <- as.numeric(k.check[
+        grep("s(nodeID):group", row.names(k.check), fixed = T), "k.index"
+      ])
+      k.pvals <- as.numeric(k.check[
+        grep("s(nodeID):group", row.names(k.check), fixed = T), "p.value"
+      ])
+    }
+  } else {
+    k.model <- k
   }
 
-  # Build formula
-  vars <- paste0(covariates, collapse = "+")
-  node_smooth <- paste0("s(nodeID, by = group, k=", k, ")")
-  subject_random_effect <- "s(subjectID, bs = \"re\")"
-  after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
-  dyn_string <- paste0(target, " ~ ", after_tilde)
-  formula = as.formula(dyn_string)
+  formula <- build_formula(target = target, covariates = covariates, k = k.model)
 
   # Fit the gam
   gam_fit <- mgcv::bam(
