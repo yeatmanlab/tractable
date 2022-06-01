@@ -21,6 +21,7 @@ Imports:
     itsadug,
     mgcv,
     mgcViz,
+    progress,
     rstatix,
     tidymv,
     tidyr

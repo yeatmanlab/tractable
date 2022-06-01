@@ -2,7 +2,9 @@
 
 export(build_formula)
 export(fit_gam)
+export(permutation_test)
 export(plot_gam_splines)
 export(shuffle_df)
 export(spline_diff)
 export(tract_name)
+export(tractr)

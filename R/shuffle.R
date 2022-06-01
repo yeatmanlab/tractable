@@ -44,3 +44,61 @@ shuffle_df <- function(input_df, dwi_metric) {
 
   return(output_df)
 }
+
+#' Simulate the null distribution using permutation testing
+#'
+#' @param df_tract AFQ Dataframe of node metric values for single tract
+#' @param n_permutations Number of permutation tests to perform
+#' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
+#' @param covariates List of strings of GAM covariates, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     This list can also include smoothing terms.
+#' @param k Dimension of the basis used to represent the node smoothing term
+#' @param family Distribution to use for the gam. Must be 'gamma' or 'beta'
+#' @param formula Optional explicit formula to use for the GAM. If provided,
+#'     this will override the dynamically generated formula build from the
+#'     target, covariate, and k inputs. Default = NULL.
+#'
+#' @return Dataframe with permutation test coefficients
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df_afq <- read.csv("/path/to/afq/output.csv")
+#' df_tract <- df_afq[which(df_afq$tractID == tract), ]
+#' permutation_coefs <- fit_gam(df_afq,
+#'                              dwi_metric = "dti_fa",
+#'                              covariates = list("group", "sex"),
+#'                              family = "gamma",
+#'                              k = 40,
+#'                              n_permutations = 1000)
+#' }
+permutation_test <- function(df_tract,
+                             n_permutations,
+                             dwi_metric,
+                             covariates = NULL,
+                             k = NULL,
+                             family = NULL,
+                             formula = NULL) {
+  coefs = vector(mode="list", length=n_permutations)
+
+  pb <- progress::progress_bar$new(total = n_permutations)
+  for (idx in 1:n_permutations) {
+    pb$tick()
+    df_shuffle <- shuffle_df(input_df = df_tract, dwi_metric = dwi_metric)
+    gam_shuffle <- fit_gam(df_tract = df_shuffle,
+                           target = dwi_metric,
+                           covariates = covariates,
+                           formula = formula,
+                           k = k,
+                           family = family)
+
+    coefs[[idx]] <- gam_shuffle$coefficients[["group1"]]
+  }
+
+  group_coefs <- unlist(coefs)
+  df_permutation_test = data.frame(group_coefs)
+
+  return(df_permutation_test)
+}
+

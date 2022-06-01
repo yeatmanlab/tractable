@@ -7,7 +7,8 @@
 fit_gam(
   df_tract,
   target,
-  covariates,
+  covariates = NULL,
+  formula = NULL,
   k = 40,
   family = "auto",
   tract_name = "",
@@ -24,10 +25,16 @@ fit_gam(
 the smoothing terms over nodes and the random effect due to subjectID.
 This list can also include smoothing terms.}
 
+\item{formula}{Optional explicit formula to use for the GAM. If provided,
+this will override the dynamically generated formula build from the
+target and covariate inputs. Default = NULL.}
+
 \item{k}{Dimension of the basis used to represent the node smoothing term,
 If k = 'auto', this function will attempt to find the best value}
 
-\item{family}{Distribution to use for the gam. Must be either 'gamma', 'beta', or 'auto'.}
+\item{family}{Distribution to use for the gam. Must be either 'gamma',
+'beta', or 'auto'. If 'auto', this function will select the best fit
+between beta and gamma distributions.}
 
 \item{tract_name}{Name of the tract, used only for output file names}
 
@@ -54,7 +61,9 @@ target ~ covariates + s(nodeID, by=group, k = k_value) + s(subjectID, bs = "re")
 \examples{
 \dontrun{
 df_afq <- read.csv("/path/to/afq/output.csv")
-gam_fit <- fit_gam(df_afq,
+tract <- "CST_L"
+df_tract <- df_afq[which(df_afq$tractID == tract), ]
+gam_fit <- fit_gam(df_tract,
                    target = "dti_fa",
                    covariates = list("group", "sex"),
                    family = "gamma",
