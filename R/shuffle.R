@@ -1,3 +1,20 @@
+#' Shuffle an AFQ dataframe
+#'
+#' This function shuffles participants' age, group, and sex,
+#' thereby destroying correlations between the participants'
+#' tract profiles and phenotypic data.
+#'
+#' @param input_df The input AFQ dataframe
+#' @param dwi_metric The diffusion MRI metric (e.g. "FA", "MD")
+#'
+#' @return A shuffled AFQ dataframe
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df_afq <- read.csv("/path/to/afq/output.csv")
+#' df_shuffle <- shuffle_df(df_afq, "dti_fa")
+#' }
 shuffle_df <- function(input_df, dwi_metric) {
   # Spread the input dataframe to one row per participant
   col_names <- colnames(input_df)

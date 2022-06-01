@@ -1,10 +1,14 @@
 Package: tractr
-Title: What the Package Does (One Line, Title Case)
+Title: Generalized Additive Models for analyzing diffusion MRI tract profiles
 Version: 0.0.0.9000
 Authors@R: 
-    person("Adam", "Richie-Halford", , "richiehalford@gmail.com", role = c("aut", "cre"),
+    person(given = "Adam",
+           family = "Richie-Halford",
+           email = "richiehalford@gmail.com",
+           role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9276-9084"))
-Description: What the package does (one paragraph).
+Description: A toolbox for analyzing diffusion MRI tract profiles using
+    generalized additive models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

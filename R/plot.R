@@ -5,15 +5,17 @@ cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 # The palette with black:
 cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
+#' Retrieve tract name from abbreviation
+#'
+#' @param tract AFQ tract abbreviation
+#'
+#' @return Formatted tract name
+#' @export
+#'
+#' @examples
+#' name <- tract_name("OR")
+#' name <- tract_name("CST_L")
 tract_name <- function(tract) {
-  # Switch for decoding AFQ tract names
-  #
-  # Arguments:
-  #   tract = AFQ tract string
-  #
-  # Returns:
-  #   tract_name = str, reformatted tract name
-
   name <- switch(
     tract,
     "OR" = "Optic Radiation",
@@ -44,22 +46,27 @@ tract_name <- function(tract) {
 }
 
 
+#' Plot GAM splines for each group
+#'
+#' @param gam_model GAM object, produced by gam/bam
+#' @param tract AFQ tract name
+#' @param df_tract A dataframe of AFQ nodes for certain tract
+#' @param dwi_metric Diffusion MRI metric (e.g. FA, MD)
+#' @param out_dir directory in which to save plots
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df_afq <- read.csv("/path/to/afq/output.csv")
+#' gam_fit <- fit_gam(df_afq,
+#'                    target = "dti_fa",
+#'                    covariates = list("group", "sex"),
+#'                    family = "gamma",
+#'                    k = 40)
+#' plot_gam_splines(gam_fit, "OR", df_afq, "dti_fa", ".")
+#' }
 plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, out_dir) {
-  # Plot splines for a GAM
-  #
-  # Will plot smoothed splines produced by GAM
-  #   by creating a prediction data frame.
-  #
-  # Arguments:
-  #   gam_model = GAM object, produced by gam/bam
-  #   tract = AFQ tract name
-  #   df_tract = dataframe of AFQ nodes for certain tract
-  #   dwi_metric = diffusion metric (e.g. FA, MD)
-  #   out_dir = directory in which to save plots
-  #
-  # Writes:
-  #   out_dir/plot_gam_*.png
-
   # generate predictions
   df_pred <- mgcv::predict.bam(
     gam_model,

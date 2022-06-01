@@ -1,26 +1,37 @@
+#' Calculate and plot difference between two splines
+#'
+#' This function both
+#'   1) draws a spline-difference plot for 2 splines,
+#'   2) and returns a dataframe of differences at each node
+#'
+#' @param gam_model GAM object, produced by gam/bam
+#' @param tract AFQ tract name
+#' @param factor_a First group factor, string
+#' @param factor_b Second group factor, string
+#' @param out_dir Directory in which to save plots
+#'
+#' @return A dataframe of spline differences at each node
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df_afq <- read.csv("/path/to/afq/output.csv")
+#' gam_fit <- fit_gam(df_afq,
+#'                    target = "dti_fa",
+#'                    covariates = list("group", "sex"),
+#'                    family = "gamma",
+#'                    k = 40)
+#' df_diff = spline_diff(gam_model = gam_fit,
+#'                       tract = "OR",
+#'                       factor_a = "0",
+#'                       factor_b = "1",
+#'                       out_dir = ".")
+#' }
 spline_diff <- function(gam_model,
                         tract,
                         factor_a,
                         factor_b,
                         out_dir) {
-  # Draw a spline-difference plot for 2 splines
-  #
-  # This will make plots and write tables of sig
-  # node differences for GAM splines bx 2 factors (groups)
-  #
-  # Arguments:
-  #   gam_model = GAM object, produced by gam/bam
-  #   tract = AFQ tract name
-  #   factor_a = group factor (0-2), string
-  #   factor_b = group factor (0-2), string
-  #   out_dir = directory in which to save plots
-  #
-  # Writes:
-  #   out_dir/plot_diff_*_pair.png
-
-  # Returns:
-  #   df_pair = dataframe of differences
-
   # determine bottom of plot
   df_pair <- itsadug::plot_diff(
     gam_model,

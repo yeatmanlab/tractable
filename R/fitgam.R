@@ -1,13 +1,22 @@
+#' Build a GAM formula dynamically
+#'
+#' @param target Diffusion metric to model
+#' @param covariates List of strings of GAM covariates, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     This list can also include smoothing terms.
+#' @param k Dimension of the basis used to represent the node smoothing term
+#'
+#' @return A GAM formula
+#' @export
+#'
+#' @examples
+#' formula <- build_formula(target = "dti_fa",
+#'                          covariates = c("group", "sex"),
+#'                          k = 40)
+#' formula <- build_formula(target = "dki_md",
+#'                          covariates = c("group", "sex", "s(age, by=sex)"),
+#'                          k = 32)
 build_formula <- function(target, covariates, k) {
-  # Build a GAM formula dynamically
-  #
-  # Arguments:
-  #   target = diffusion metric to model
-  #   covariates = list of strings of GAM covariates, not including the smoothing terms over nodes and the random effect due to subjectID
-  #   k = dimension of the basis used to represent the node smoothing term.
-  #
-  # Returns:
-  #   formula = GAM formula
   vars <- paste0(covariates, collapse = "+")
   node_smooth <- paste0("s(nodeID, by = group, k=", k, ")")
   subject_random_effect <- "s(subjectID, bs = \"re\")"
@@ -18,34 +27,48 @@ build_formula <- function(target, covariates, k) {
 }
 
 
+#' Fit a GAM for tract node metrics (e.g. FA, MD)
+#'
+#' This function has a series of steps:
+#' \itemize{
+#'   \item If family == "auto", choose the distribution (either beta or gamma)
+#'      that has the lowest AIC when fitting to the dMRI metric data
+#'   \item If k == "auto", build an initial GAM model with k = 16 and continue to
+#'      double the k value until gam.check shows that k is large enough
+#'   \item Fit a GAM model such that: \cr \cr
+#'      target ~ covariates + s(nodeID, by=group, k = k_value) + s(subjectID, bs = "re")
+#'      \cr
+#'   \item Optionally save the output of gam.check and summary to files.
+#' }
+#'
+#' @param df_tract AFQ Dataframe of node metric values for single tract
+#' @param target The diffusion metric to model (e.g. "FA", "MD")
+#' @param covariates List of strings of GAM covariates, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     This list can also include smoothing terms.
+#' @param k Dimension of the basis used to represent the node smoothing term,
+#'     If k = 'auto', this function will attempt to find the best value
+#' @param family Distribution to use for the gam. Must be either 'gamma', 'beta', or 'auto'.
+#      If 'auto', this function will select the best fit between beta and gamma distributions.
+#' @param tract_name Name of the tract, used only for output file names
+#' @param out_dir Directory in which to save gam stats
+#' @param save_output Boolean flag to save gam stat files
+#'
+#' @return Fitted GAM model
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df_afq <- read.csv("/path/to/afq/output.csv")
+#' gam_fit <- fit_gam(df_afq,
+#'                    target = "dti_fa",
+#'                    covariates = list("group", "sex"),
+#'                    family = "gamma",
+#'                    k = "auto")
+#' }
 fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
                     tract_name="", out_dir=".",
                     save_output=FALSE) {
-  # Calculate GAM for tract node metrics (e.g. FA, MD)
-  #
-  # This function has a series of steps:
-  #   1) Foo
-  #   2) Bar
-  #   3) Baz
-  #
-  # Arguments:
-  #   df_tract = dataframe of node metric values for single tract
-  #   target = diffusion metric to model
-  #   covariates = list of strings of GAM covariates, not including the smoothing terms over nodes and the random effect due to subjectID
-  #   k = dimension of the basis used to represent the node smoothing term.
-  #       If k='auto', this function will attempt to find the best
-  #   family = distribution to use for the gam. Must be either 'gamma', 'beta', or 'auto'
-  #            if 'auto', this function will select the best fit between beta and gamma distributions.
-  #   tract_name = name of the tract, used only for output file names
-  #   out_dir = directory in which to save gam stats
-  #   save_output = boolean flag to save gam stat files
-  #
-  # Writes:
-  #   gam_stats_dir/Stats_GAM-*.txt
-  #
-  # Returns:
-  #   fit = GAM object for each tract
-
   # Set link family
   if (tolower(family) == "gamma") {
     linkfamily <- stats::Gamma(link = "logit")
