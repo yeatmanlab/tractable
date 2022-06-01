@@ -40,7 +40,7 @@ spline_diff <- function(gam_model,
   df_pair$Comp <- paste0(factor_a, factor_b)
 
   # set output
-  png(
+  grDevices::png(
     filename = file.path(out_dir, paste0(
       "plot_diff_", tract, "_pair.png"
     )),
@@ -48,12 +48,13 @@ spline_diff <- function(gam_model,
   )
 
   # draw plot
-  par(mar = c(5, 5, 4, 2), family = "Times New Roman")
-  p_summary <- capture.output(itsadug::plot_diff(
+  graphics::par(mar = c(5, 5, 4, 2), family = "Times New Roman")
+  p_summary <- utils::capture.output(itsadug::plot_diff(
     gam_model,
     view = "nodeID",
     comp = list(group = c(factor_a, factor_b)),
     rm.ranef = T,
+    print.summary = T,
     main = paste0("Difference Scores, ", factor_a, "-", factor_b),
     ylab = "Est. difference",
     xlab = "Tract Node",
@@ -75,16 +76,16 @@ spline_diff <- function(gam_model,
 
   # shade significant regions
   for (h_ind in 1:length(start_list)) {
-    polygon(
+    graphics::polygon(
       x = c(rep(start_list[h_ind],2), rep(end_list[h_ind], 2)),
       y = c(0, min_val, min_val, 0),
-      col = rgb(1, 0, 0, 0.2),
+      col = grDevices::rgb(1, 0, 0, 0.2),
       border = NA
     )
   }
 
-  par(mar = c(5, 4, 4, 2))
-  dev.off()
+  graphics::par(mar = c(5, 4, 4, 2))
+  grDevices::dev.off()
 
   return(df_pair)
 }

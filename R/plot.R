@@ -84,17 +84,10 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, out_dir) {
   h_tract <- tract_name(tract)
   h_title <- paste0("GAM fit of ", h_tract, " ", dwi_metric, " values")
 
-  # h_breaks <- c("0", "2")
-  # h_labels <- c(
-  #   switch_plot_values("0")[[2]][1],
-  #   #switch_plot_values("1")[[2]][1],
-  #   switch_plot_values("2")[[2]][1]
-  # )
-
   # draw plot
   p <- ggplot2::ggplot(data = df_pred) +
-    ggplot2::geom_smooth(mapping = ggplot2::aes(
-      x = nodeID, y = fit, color = Group
+    ggplot2::geom_smooth(mapping = ggplot2::aes_string(
+      x = "nodeID", y = "fit", color = "Group"
     )) +
     ggplot2::ggtitle(h_title) +
     ggplot2::ylab(paste0("Fit ", dwi_metric)) +
@@ -106,8 +99,6 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, out_dir) {
   # Use colorblind palette for fills and lines
   p + ggplot2::scale_color_manual(
     values = cbbPalette,
-    # breaks = h_breaks,
-    # labels = h_labels
   )
 
   plot_filename <- file.path(out_dir, paste0("plot_gam_", tract, ".png"))

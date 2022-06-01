@@ -3,7 +3,7 @@ shuffle_df <- function(input_df, dwi_metric) {
   col_names <- colnames(input_df)
   wide_df <- tidyr::pivot_wider(
     input_df,
-    names_from = nodeID,
+    names_from = "nodeID",
     values_from = dwi_metric
   )
 
@@ -23,6 +23,7 @@ shuffle_df <- function(input_df, dwi_metric) {
   )
 
   output_df <- dplyr::select(output_df, dplyr::all_of(col_names))
+  output_df$nodeID <- as.integer(output_df$nodeID)
 
   return(output_df)
 }

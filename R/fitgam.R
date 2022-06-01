@@ -13,7 +13,7 @@ build_formula <- function(target, covariates, k) {
   subject_random_effect <- "s(subjectID, bs = \"re\")"
   after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
   dyn_string <- paste0(target, " ~ ", after_tilde)
-  formula = as.formula(dyn_string)
+  formula = stats::as.formula(dyn_string)
   return(formula)
 }
 
@@ -48,9 +48,9 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
 
   # Set link family
   if (tolower(family) == "gamma") {
-    linkfamily <- Gamma(link = "logit")
+    linkfamily <- stats::Gamma(link = "logit")
   } else if (tolower(family) == "beta") {
-    linkfamily <- betar(link = "logit")
+    linkfamily <- mgcv::betar(link = "logit")
   } else if (tolower(family) == "auto") {
     fit.beta <- fitdistrplus::fitdist(df_tract[[target]], "beta")
     fit.gamma <- fitdistrplus::fitdist(df_tract[[target]], "gamma")
@@ -88,7 +88,7 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
         method = "REML"
       )
 
-      k.output <- capture.output(mgcv::gam.check(gam_fit, rep = 500))
+      k.output <- utils::capture.output(mgcv::gam.check(gam_fit, rep = 500))
       empties <- which(k.output == "")
       table.start <- empties[length(empties)] + 1
       end.sep <- which(k.output == "---")
@@ -97,13 +97,16 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
       # Get rid of the significance codes
       table.text <- lapply(table.text, function(line) gsub("[*. ]+$", "", line))
       table.text <- unlist(table.text)
-      k.check <- read.table(text = table.text)
+      k.check <- utils::read.table(text = table.text)
       k.indices <- as.numeric(k.check[
         grep("s(nodeID):group", row.names(k.check), fixed = T), "k.index"
       ])
-      k.pvals <- as.numeric(k.check[
-        grep("s(nodeID):group", row.names(k.check), fixed = T), "p.value"
-      ])
+      k.pvals <- as.numeric(
+        unlist(lapply(
+        k.check[
+          grep("s(nodeID):group", row.names(k.check), fixed = T), "p.value"
+        ], function(item) gsub("^<", "", item)))
+      )
     }
   } else {
     k.model <- k
@@ -120,17 +123,17 @@ fit_gam <- function(df_tract, target, covariates, k=40, family="auto",
   )
 
   if (save_output) {
-    capture.output(
+    utils::capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
       file = file.path(out_dir, paste0(
         "k_check_gam_", family, "_", tract_name, ".txt"
       ))
     )
 
-    capture.output(
-      mgcv::summary(gam_fit),
+    utils::capture.output(
+      summary(gam_fit),
       file = file.path(out_dir, paste0(
-        "fit_summary_gam_", family, "_", tract, ".txt"
+        "fit_summary_gam_", family, "_", tract_name, ".txt"
       ))
     )
   }
