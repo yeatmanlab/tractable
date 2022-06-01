@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="./man/figures/tractr-logo.svg" width="11%" />
+<img src="./man/figures/tractr-logo.svg" width="15%" />
 
 # tractr
 
