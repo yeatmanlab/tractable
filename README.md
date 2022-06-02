@@ -1,14 +1,17 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="./man/figures/tractr-logo.svg" width="15%" />
-
-# tractr
+# tractr <img src="man/figures/tractr-logo.svg" align="right" height="100"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of tractr is to …
+## Overview
+
+tractr is a suite of functions to analyze diffusion MRI (dMRI) tract
+profiles using generalized additive models. It operates on outputs from
+the AFQ software ecosystem and tests for differences between two
+phenotypic groups along the length of a specified white matter tract.
 
 ## Installation
 
