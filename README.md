@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# tractr <img src="man/figures/tractr-logo.svg" align="right" height="100"/>
+# tractr <img src="man/figures/tractr-logo.svg" align="right" height="139"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
