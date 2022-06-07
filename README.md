@@ -4,14 +4,19 @@
 # tractr <img src="man/figures/tractr-logo.svg" align="right" height="139"/>
 
 <!-- badges: start -->
+<!--insert CRAN status badge -->
+<!--insert R-CMD-check badge -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/richford/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractr?branch=main)
 <!-- badges: end -->
 
 ## Overview
 
-tractr is a suite of functions to analyze diffusion MRI (dMRI) tract
-profiles using generalized additive models. It operates on outputs from
-the AFQ software ecosystem and tests for differences between two
-phenotypic groups along the length of a specified white matter tract.
+tractr contains functions to analyze diffusion MRI (dMRI) tract profiles
+using generalized additive models. It operates on outputs from the AFQ
+software ecosystem and tests for differences between two phenotypic
+groups along the length of a specified white matter tract.
 
 ## Installation
 
