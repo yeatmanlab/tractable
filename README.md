@@ -5,8 +5,8 @@
 
 <!-- badges: start -->
 <!--insert CRAN status badge -->
-<!--insert R-CMD-check badge -->
 
+[![R-CMD-check](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/richford/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractr?branch=main)
 <!-- badges: end -->
