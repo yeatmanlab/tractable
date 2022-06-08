@@ -9,6 +9,7 @@
 [![R-CMD-check](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/richford/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractr?branch=main)
+
 <!-- badges: end -->
 
 ## Overview
@@ -36,3 +37,10 @@ This is a basic example which shows you how to solve a common problem:
 library(tractr)
 ## basic example code
 ```
+
+## Code of Conduct
+
+Please note that the tractr project is released with a [Contributor Code
+of
+Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
