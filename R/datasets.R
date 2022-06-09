@@ -178,10 +178,10 @@ load.afq.hbn <- function(truncate = FALSE, ...) {
   if (truncate) {
     url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_tract_profiles.csv"
     url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_participants.tsv"
-  } else {
+  } else { # nocov start
     url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/combined_tract_profiles.csv"
     url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/qsiprep/participants.tsv"
-  }
+  } # nocov end
 
   df <- load.afq.files(nodes_csv = url.nodes,
                        pheno_csv = url.pheno,
