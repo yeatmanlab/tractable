@@ -164,6 +164,7 @@ load.afq.weston.havens <- function(...) {
 
 #' Load tract profiles from the Healthy Brain Network dataset
 #'
+#' @param truncate if TRUE, truncate the data to 49 rows. default = FALSE
 #' @param ... arguments to be passed to read.csv
 #'
 #' @return A merged dataframe with data from HBN
@@ -173,9 +174,15 @@ load.afq.weston.havens <- function(...) {
 #' \dontrun{
 #'   df_hbn <- load.afq.hbn()
 #' }
-load.afq.hbn <- function(...) {
-  url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/combined_tract_profiles.csv"
-  url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/qsiprep/participants.tsv"
+load.afq.hbn <- function(truncate = FALSE, ...) {
+  if (truncate) {
+    url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_tract_profiles.csv"
+    url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_participants.tsv"
+  } else {
+    url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/combined_tract_profiles.csv"
+    url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/qsiprep/participants.tsv"
+  }
+
   df <- load.afq.files(nodes_csv = url.nodes,
                        pheno_csv = url.pheno,
                        index.pheno = "subject_id",
