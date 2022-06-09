@@ -2,6 +2,11 @@
 
 export(build_formula)
 export(fit_gam)
+export(load.afq.files)
+export(load.afq.hbn)
+export(load.afq.sarica)
+export(load.afq.weston.havens)
+export(parse.s3.uri)
 export(permutation_test)
 export(plot_gam_splines)
 export(shuffle_df)

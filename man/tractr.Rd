@@ -5,18 +5,18 @@
 \title{Analyze group differences in dMRI tract profiles data using GAMs}
 \usage{
 tractr(
-  afq.csv,
+  df_afq,
   tract,
   dwi_metric,
   covariates,
   comp_list,
   out_dir,
-  permute.test = FALSE,
-  permute.n = 100
+  permute = FALSE,
+  n_permute = 100
 )
 }
 \arguments{
-\item{afq.csv}{Input CSV file with AFQ outputs}
+\item{df_afq}{Input AFQ dataframe}
 
 \item{tract}{Abbreviated tract name, e.g., "CST_L" or "OR"}
 
@@ -31,23 +31,24 @@ These should be values from the group column in the AFQ CSV file.}
 
 \item{out_dir}{Directory in which to save text output and plots}
 
-\item{permute.test}{If TRUE, estimate the null distribution of the overall
+\item{permute}{If TRUE, estimate the null distribution of the overall
 group coefficient using a permutation test.}
 
-\item{permute.n}{Number of permutations to simulate the null distribution}
+\item{n_permute}{Number of permutations to simulate the null distribution}
 }
 \description{
 Analyze group differences in dMRI tract profiles data using GAMs
 }
 \examples{
 \dontrun{
-tractr(afq.csv = "/path/to/afq/output.csv",
+df_afq = read.csv("/path/to/afq/output.csv")
+tractr(df_afq = df_afq,
        tract = "CST_R",
        dwi_metric = "dti_fa",
        covariates = c("sex", "group"),
        comp_list = c("0", "1"),
        out_dir = ".",
-       permute.test = TRUE,
-       permute.n = 100)
+       permute = TRUE,
+       n_permute = 100)
 }
 }

@@ -1,6 +1,6 @@
 #' Analyze group differences in dMRI tract profiles data using GAMs
 #'
-#' @param afq.csv Input CSV file with AFQ outputs
+#' @param df_afq Input AFQ dataframe
 #' @param tract Abbreviated tract name, e.g., "CST_L" or "OR"
 #' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
 #' @param covariates List of strings of GAM covariates,
@@ -9,31 +9,32 @@
 #' @param comp_list List of factor strings for pairwise comparison.
 #'     These should be values from the group column in the AFQ CSV file.
 #' @param out_dir Directory in which to save text output and plots
-#' @param permute.test If TRUE, estimate the null distribution of the overall
+#' @param permute If TRUE, estimate the null distribution of the overall
 #'     group coefficient using a permutation test.
-#' @param permute.n Number of permutations to simulate the null distribution
+#' @param n_permute Number of permutations to simulate the null distribution
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' tractr(afq.csv = "/path/to/afq/output.csv",
+#' df_afq = read.csv("/path/to/afq/output.csv")
+#' tractr(df_afq = df_afq,
 #'        tract = "CST_R",
 #'        dwi_metric = "dti_fa",
 #'        covariates = c("sex", "group"),
 #'        comp_list = c("0", "1"),
 #'        out_dir = ".",
-#'        permute.test = TRUE,
-#'        permute.n = 100)
+#'        permute = TRUE,
+#'        n_permute = 100)
 #' }
-tractr <- function(afq.csv,
+tractr <- function(df_afq,
                    tract,
                    dwi_metric,
                    covariates,
                    comp_list,
                    out_dir,
-                   permute.test = FALSE,
-                   permute.n = 100) {
+                   permute = FALSE,
+                   n_permute = 100) {
   # Create output directories
   dir.create(out_dir, showWarnings = TRUE, recursive = TRUE)
 
@@ -42,8 +43,6 @@ tractr <- function(afq.csv,
 
   stats_dir <- file.path(out_dir, "stats")
   dir.create(stats_dir, showWarnings = TRUE, recursive = TRUE)
-
-  df_afq = utils::read.csv(afq.csv)
 
   df_afq$group <- factor(df_afq$group)
   df_afq$subjectID <- unclass(factor(df_afq$subjectID))
@@ -64,7 +63,7 @@ tractr <- function(afq.csv,
                      save_output = TRUE)
 
   df_perm <- permutation_test(df_tract = df_tract,
-                              n_permutations = permute.n,
+                              n_permutations = n_permute,
                               dwi_metric = dwi_metric,
                               family = gam_fit$family,
                               formula = gam_fit$formula)
