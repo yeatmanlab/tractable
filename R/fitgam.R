@@ -4,6 +4,10 @@
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
 #'     This list can also include smoothing terms.
+#' @param smooth_terms Smoothing terms, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant.id The name of the column that encodes participant ID
 #' @param k Dimension of the basis used to represent the node smoothing term
 #'
 #' @return A GAM formula
@@ -16,11 +20,14 @@
 #' formula <- build_formula(target = "dki_md",
 #'                          covariates = c("group", "sex", "s(age, by=sex)"),
 #'                          k = 32)
-build_formula <- function(target, covariates, k) {
+build_formula <- function(target, covariates, smooth_terms = NULL, group.by = "group", participant.id = "subjectID", k) {
   vars <- paste0(covariates, collapse = "+")
-  node_smooth <- paste0("s(nodeID, by = group, k=", k, ")")
-  subject_random_effect <- "s(subjectID, bs = \"re\")"
+  node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
+  subject_random_effect <- paste0("s(", participant.id, ", bs = \"re\")")
   after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
+  if (!is.null(smooth_terms)) {
+    after_tilde <- paste0(list(after_tilde, smooth_terms, collapse = "+"))
+  }
   dyn_string <- paste0(target, " ~ ", after_tilde)
   formula = stats::as.formula(dyn_string)
   return(formula)
@@ -45,7 +52,10 @@ build_formula <- function(target, covariates, k) {
 #' @param target The diffusion metric to model (e.g. "FA", "MD")
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#'     This list can also include smoothing terms.
+#' @param smooth_terms Smoothing terms, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant.id The name of the column that encodes participant ID
 #' @param formula Optional explicit formula to use for the GAM. If provided,
 #'     this will override the dynamically generated formula build from the
 #'     target and covariate inputs. Default = NULL.
@@ -75,6 +85,9 @@ build_formula <- function(target, covariates, k) {
 fit_gam <- function(df_tract,
                     target,
                     covariates = NULL,
+                    smooth_terms = NULL,
+                    group.by = "group",
+                    participant.id = "subjectID",
                     formula = NULL,
                     k = 40,
                     family = "auto",
@@ -109,7 +122,12 @@ fit_gam <- function(df_tract,
 
       while (any(k.indices < 1.0) & any(k.pvals <= 0.05)) {
         k.model <- k.model * 2
-        formula <- build_formula(target = target, covariates = covariates, k = k.model)
+        formula <- build_formula(target = target,
+                                 covariates = covariates,
+                                 smooth_terms = smooth_terms,
+                                 group.by = group.by,
+                                 participant.id = participant.id,
+                                 k = k.model)
 
         # Fit the gam
         gam_fit <- mgcv::bam(
@@ -130,12 +148,12 @@ fit_gam <- function(df_tract,
         table.text <- unlist(table.text)
         k.check <- utils::read.table(text = table.text)
         k.indices <- as.numeric(k.check[
-          grep("s(nodeID):group", row.names(k.check), fixed = T), "k.index"
+          grep(paste0("s(nodeID):", group.by), row.names(k.check), fixed = T), "k.index"
         ])
         k.pvals <- as.numeric(
           unlist(lapply(
             k.check[
-              grep("s(nodeID):group", row.names(k.check), fixed = T), "p.value"
+              grep(paste0("s(nodeID):", group.by), row.names(k.check), fixed = T), "p.value"
             ], function(item) gsub("^<", "", item)))
         )
       }
@@ -143,7 +161,12 @@ fit_gam <- function(df_tract,
       k.model <- k
     }
 
-    formula <- build_formula(target = target, covariates = covariates, k = k.model)
+    formula <- build_formula(target = target,
+                             covariates = covariates,
+                             smooth_terms = smooth_terms,
+                             group.by = group.by,
+                             participant.id = participant.id,
+                             k = k.model)
   }
 
   # Fit the gam

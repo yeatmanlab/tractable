@@ -8,6 +8,9 @@ fit_gam(
   df_tract,
   target,
   covariates = NULL,
+  smooth_terms = NULL,
+  group.by = "group",
+  participant.id = "subjectID",
   formula = NULL,
   k = 40,
   family = "auto",
@@ -22,8 +25,14 @@ fit_gam(
 \item{target}{The diffusion metric to model (e.g. "FA", "MD")}
 
 \item{covariates}{List of strings of GAM covariates, not including
-the smoothing terms over nodes and the random effect due to subjectID.
-This list can also include smoothing terms.}
+the smoothing terms over nodes and the random effect due to subjectID.}
+
+\item{smooth_terms}{Smoothing terms, not including
+the smoothing terms over nodes and the random effect due to subjectID.}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
+\item{participant.id}{The name of the column that encodes participant ID}
 
 \item{formula}{Optional explicit formula to use for the GAM. If provided,
 this will override the dynamically generated formula build from the

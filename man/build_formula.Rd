@@ -4,7 +4,14 @@
 \alias{build_formula}
 \title{Build a GAM formula dynamically}
 \usage{
-build_formula(target, covariates, k)
+build_formula(
+  target,
+  covariates,
+  smooth_terms = NULL,
+  group.by = "group",
+  participant.id = "subjectID",
+  k
+)
 }
 \arguments{
 \item{target}{Diffusion metric to model}
@@ -12,6 +19,13 @@ build_formula(target, covariates, k)
 \item{covariates}{List of strings of GAM covariates, not including
 the smoothing terms over nodes and the random effect due to subjectID.
 This list can also include smoothing terms.}
+
+\item{smooth_terms}{Smoothing terms, not including
+the smoothing terms over nodes and the random effect due to subjectID.}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
+\item{participant.id}{The name of the column that encodes participant ID}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term}
 }

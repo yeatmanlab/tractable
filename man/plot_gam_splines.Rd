@@ -4,7 +4,16 @@
 \alias{plot_gam_splines}
 \title{Plot GAM splines for each group}
 \usage{
-plot_gam_splines(gam_model, tract, df_tract, dwi_metric, out_dir)
+plot_gam_splines(
+  gam_model,
+  tract,
+  df_tract,
+  dwi_metric,
+  covariates,
+  group.by = "group",
+  participant.id = "subjectID",
+  out_dir
+)
 }
 \arguments{
 \item{gam_model}{GAM object, produced by gam/bam}
@@ -14,6 +23,14 @@ plot_gam_splines(gam_model, tract, df_tract, dwi_metric, out_dir)
 \item{df_tract}{A dataframe of AFQ nodes for certain tract}
 
 \item{dwi_metric}{Diffusion MRI metric (e.g. FA, MD)}
+
+\item{covariates}{List of strings of GAM covariates,
+not including the smoothing terms over nodes and the random effect due
+to subjectID.}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
+\item{participant.id}{The name of the column that encodes participant ID}
 
 \item{out_dir}{directory in which to save plots}
 }
@@ -28,6 +45,11 @@ gam_fit <- fit_gam(df_afq,
                    covariates = list("group", "sex"),
                    family = "gamma",
                    k = 40)
-plot_gam_splines(gam_fit, "OR", df_afq, "dti_fa", ".")
+plot_gam_splines(gam_model = gam_fit,
+                 tract = "OR",
+                 df_tract = df_afq,
+                 dwi_metric = "dti_fa",
+                 covariates = c("group", "sex"),
+                 out_dir = ".")
 }
 }

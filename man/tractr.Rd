@@ -5,36 +5,50 @@
 \title{Analyze group differences in dMRI tract profiles data using GAMs}
 \usage{
 tractr(
-  df_afq,
+  df_afq = NULL,
   tract,
   dwi_metric,
-  covariates,
-  comp_list,
   out_dir,
+  participant.id = "subjectID",
+  group.by = "group",
+  covariates = c(group.by),
+  smooth_terms = NULL,
+  comp_list = unique(df_afq[[group.by]]),
   permute = FALSE,
-  n_permute = 100
+  n_permute = 100,
+  ...
 )
 }
 \arguments{
-\item{df_afq}{Input AFQ dataframe}
+\item{df_afq}{Input AFQ dataframe. If NULL, this function will load data
+using load.afq.data and the additional arguments in ...}
 
 \item{tract}{Abbreviated tract name, e.g., "CST_L" or "OR"}
 
 \item{dwi_metric}{The diffusion metric to model (e.g. "FA", "MD")}
 
+\item{out_dir}{Directory in which to save text output and plots}
+
+\item{participant.id}{The name of the column that encodes participant ID}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
 \item{covariates}{List of strings of GAM covariates,
 not including the smoothing terms over nodes and the random effect due
-to subjectID. This list can also include smoothing terms.}
+to subjectID.}
+
+\item{smooth_terms}{Smoothing terms, not including
+the smoothing terms over nodes and the random effect due to subjectID.}
 
 \item{comp_list}{List of factor strings for pairwise comparison.
 These should be values from the group column in the AFQ CSV file.}
-
-\item{out_dir}{Directory in which to save text output and plots}
 
 \item{permute}{If TRUE, estimate the null distribution of the overall
 group coefficient using a permutation test.}
 
 \item{n_permute}{Number of permutations to simulate the null distribution}
+
+\item{...}{Arguments to pass to load.afq.files}
 }
 \description{
 Analyze group differences in dMRI tract profiles data using GAMs

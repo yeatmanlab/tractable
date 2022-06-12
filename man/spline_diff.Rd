@@ -4,12 +4,14 @@
 \alias{spline_diff}
 \title{Calculate and plot difference between two splines}
 \usage{
-spline_diff(gam_model, tract, factor_a, factor_b, out_dir)
+spline_diff(gam_model, tract, group.by = "group", factor_a, factor_b, out_dir)
 }
 \arguments{
 \item{gam_model}{GAM object, produced by gam/bam}
 
 \item{tract}{AFQ tract name}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
 
 \item{factor_a}{First group factor, string}
 

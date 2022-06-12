@@ -6,6 +6,7 @@
 #'
 #' @param gam_model GAM object, produced by gam/bam
 #' @param tract AFQ tract name
+#' @param group.by The grouping variable used to group nodeID smoothing terms
 #' @param factor_a First group factor, string
 #' @param factor_b Second group factor, string
 #' @param out_dir Directory in which to save plots
@@ -29,14 +30,18 @@
 #' }
 spline_diff <- function(gam_model,
                         tract,
+                        group.by = "group",
                         factor_a,
                         factor_b,
                         out_dir) {
   # determine bottom of plot
+  comp <- list(c(factor_a, factor_b))
+  names(comp) <- c(group.by)
+
   df_pair <- itsadug::plot_diff(
     gam_model,
     view = "nodeID",
-    comp = list(group = c(factor_a, factor_b)),
+    comp = comp,
     rm.ranef = T,
     plot = F,
     print.summary = F
@@ -63,7 +68,7 @@ spline_diff <- function(gam_model,
   p_summary <- utils::capture.output(itsadug::plot_diff(
     gam_model,
     view = "nodeID",
-    comp = list(group = c(factor_a, factor_b)),
+    comp = comp,
     rm.ranef = T,
     print.summary = T,
     main = paste0("Difference Scores, ", factor_a, "-", factor_b),
