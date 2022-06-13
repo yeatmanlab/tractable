@@ -4,12 +4,29 @@
 \alias{shuffle_df}
 \title{Shuffle an AFQ dataframe}
 \usage{
-shuffle_df(input_df, dwi_metric)
+shuffle_df(
+  input_df,
+  dwi_metric,
+  group.by = "group",
+  participant.id = "subjectID",
+  shuffle_vars = NULL,
+  sample_uniform = FALSE
+)
 }
 \arguments{
 \item{input_df}{The input AFQ dataframe}
 
 \item{dwi_metric}{The diffusion MRI metric (e.g. "FA", "MD")}
+
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
+\item{participant.id}{The name of the column that encodes participant ID}
+
+\item{shuffle_vars}{List of strings of column names that should be shuffled}
+
+\item{sample_uniform}{Boolean flag. If TRUE, shuffling should sample
+uniformly from the unique values in the columns. If FALSE, shuffling
+will shuffle without replacement.}
 }
 \value{
 A shuffled AFQ dataframe

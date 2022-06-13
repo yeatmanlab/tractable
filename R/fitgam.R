@@ -95,17 +95,19 @@ fit_gam <- function(df_tract,
                     out_dir = ".",
                     save_output = FALSE) {
   # Set link family
-  if (tolower(family) == "gamma") {
-    linkfamily <- stats::Gamma(link = "logit")
-  } else if (tolower(family) == "beta") {
-    linkfamily <- mgcv::betar(link = "logit")
-  } else if (tolower(family) == "auto") {
-    fit.beta <- fitdistrplus::fitdist(df_tract[[target]], "beta")
-    fit.gamma <- fitdistrplus::fitdist(df_tract[[target]], "gamma")
-    if (fit.beta$aic < fit.gamma$aic) {
-      linkfamily <- mgcv::betar(link = "logit")
-    } else {
+  if (is.character(family) | is.null(family)) {
+    if (is.null(family) | tolower(family) == "auto") {
+      fit.beta <- fitdistrplus::fitdist(df_tract[[target]], "beta")
+      fit.gamma <- fitdistrplus::fitdist(df_tract[[target]], "gamma")
+      if (fit.beta$aic < fit.gamma$aic) {
+        linkfamily <- mgcv::betar(link = "logit")
+      } else {
+        linkfamily <- stats::Gamma(link = "logit")
+      }
+    } else if (tolower(family) == "gamma") {
       linkfamily <- stats::Gamma(link = "logit")
+    } else if (tolower(family) == "beta") {
+      linkfamily <- mgcv::betar(link = "logit")
     }
   } else {
     linkfamily <- family
@@ -160,7 +162,6 @@ fit_gam <- function(df_tract,
     } else {
       k.model <- k
     }
-
     formula <- build_formula(target = target,
                              covariates = covariates,
                              smooth_terms = smooth_terms,

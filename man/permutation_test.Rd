@@ -8,7 +8,11 @@ permutation_test(
   df_tract,
   n_permutations,
   dwi_metric,
+  group.by = "group",
+  participant.id = "subjectID",
+  sample_uniform = FALSE,
   covariates = NULL,
+  smooth_terms = NULL,
   k = NULL,
   family = NULL,
   formula = NULL
@@ -21,9 +25,19 @@ permutation_test(
 
 \item{dwi_metric}{The diffusion metric to model (e.g. "FA", "MD")}
 
+\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+
+\item{participant.id}{The name of the column that encodes participant ID}
+
+\item{sample_uniform}{Boolean flag. If TRUE, shuffling should sample
+uniformly from the unique values in the columns. If FALSE, shuffling
+will shuffle without replacement.}
+
 \item{covariates}{List of strings of GAM covariates, not including
-the smoothing terms over nodes and the random effect due to subjectID.
-This list can also include smoothing terms.}
+the smoothing terms over nodes and the random effect due to subjectID.}
+
+\item{smooth_terms}{Smoothing terms, not including
+the smoothing terms over nodes and the random effect due to subjectID.}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term}
 

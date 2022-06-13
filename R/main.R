@@ -87,10 +87,17 @@ tractr <- function(df_afq = NULL,
     df_perm <- permutation_test(df_tract = df_tract,
                                 n_permutations = n_permute,
                                 dwi_metric = dwi_metric,
+                                group.by = group.by,
+                                participant.id = participant.id,
+                                covariates = covariates,
+                                sample_uniform = TRUE,
                                 family = gam_fit$family,
                                 formula = gam_fit$formula)
 
-    observed_coef = gam_fit$coefficients[["group1"]]
+    coef_name <- grep(paste0("^", group.by),
+                      names(gam_fit$coefficients),
+                      value = TRUE)
+    observed_coef = gam_fit$coefficients[[coef_name]]
     group_p_value = sum(
       abs(df_perm$group_coefs) >= observed_coef
     ) / length(df_perm$group_coefs)
