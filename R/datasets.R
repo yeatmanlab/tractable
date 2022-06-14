@@ -38,10 +38,10 @@ parse.s3.uri <- function(uri) {
 #'
 #' @examples
 #' \dontrun{
-#'   df_afq <- load.afq.files(nodes_csv = "a/path/to/nodes.csv",
+#'   df_afq <- read.afq.files(nodes_csv = "a/path/to/nodes.csv",
 #'                            pheno_csv = "a/path/to/pheno.csv")
 #' }
-load.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.nodes = index, index.pheno = index, dwi_metrics = NULL, factor_cols = NULL, pheno_cols = NULL, ...) {
+read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.nodes = index, index.pheno = index, dwi_metrics = NULL, factor_cols = NULL, pheno_cols = NULL, ...) {
   if (grepl("^s3://", nodes_csv)) {
     # Read from S3
     uri <- parse.s3.uri(nodes_csv)
@@ -128,11 +128,11 @@ load.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
 #' @export
 #'
 #' @examples
-#' df_sarica <- load.afq.sarica()
-load.afq.sarica <- function(...) {
+#' df_sarica <- read.afq.sarica()
+read.afq.sarica <- function(...) {
   url.nodes <- "https://github.com/yeatmanlab/Sarica_2017/raw/gh-pages/data/nodes.csv"
   url.pheno <- "https://github.com/yeatmanlab/Sarica_2017/raw/gh-pages/data/subjects.csv"
-  df <- load.afq.files(nodes_csv = url.nodes,
+  df <- read.afq.files(nodes_csv = url.nodes,
                        pheno_csv = url.pheno,
                        dwi_metrics = c("fa", "md"),
                        factor_cols = c("class", "gender"),
@@ -149,11 +149,11 @@ load.afq.sarica <- function(...) {
 #' @export
 #'
 #' @examples
-#' df_weston_havens <- load.afq.weston.havens()
-load.afq.weston.havens <- function(...) {
+#' df_weston_havens <- read.afq.weston.havens()
+read.afq.weston.havens <- function(...) {
   url.nodes <- "https://yeatmanlab.github.io/AFQBrowser-demo/data/nodes.csv"
   url.pheno <- "https://yeatmanlab.github.io/AFQBrowser-demo/data/subjects.csv"
-  df <- load.afq.files(nodes_csv = url.nodes,
+  df <- read.afq.files(nodes_csv = url.nodes,
                        pheno_csv = url.pheno,
                        dwi_metrics = c("fa", "md"),
                        factor_cols = c("Gender"),
@@ -172,9 +172,9 @@ load.afq.weston.havens <- function(...) {
 #'
 #' @examples
 #' \dontrun{
-#'   df_hbn <- load.afq.hbn()
+#'   df_hbn <- read.afq.hbn()
 #' }
-load.afq.hbn <- function(truncate = FALSE, ...) {
+read.afq.hbn <- function(truncate = FALSE, ...) {
   if (truncate) {
     url.nodes <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_tract_profiles.csv"
     url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/afq/.truncated_participants.tsv"
@@ -183,7 +183,7 @@ load.afq.hbn <- function(truncate = FALSE, ...) {
     url.pheno <- "s3://fcp-indi/data/Projects/HBN/BIDS_curated/derivatives/qsiprep/participants.tsv"
   } # nocov end
 
-  df <- load.afq.files(nodes_csv = url.nodes,
+  df <- read.afq.files(nodes_csv = url.nodes,
                        pheno_csv = url.pheno,
                        index.pheno = "subject_id",
                        dwi_metrics = c("dki_fa", "dki_md"),
