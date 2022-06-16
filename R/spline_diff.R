@@ -38,22 +38,25 @@ spline_diff <- function(gam_model,
   comp <- list(c(factor_a, factor_b))
   names(comp) <- c(group.by)
 
+  set.seed(123)
+
   df_pair <- itsadug::plot_diff(
     gam_model,
     view = "nodeID",
     comp = comp,
-    rm.ranef = T,
-    plot = F,
-    print.summary = F
+    rm.ranef = TRUE,
+    plot = FALSE,
+    print.summary = FALSE,
+    sim.ci = TRUE,
+    n.grid = 100,
   )
 
   h_min <- min(df_pair$est)
-  h_ci <- df_pair[which(df_pair$est == h_min), ]$CI
+  h_ci <- df_pair[which(df_pair$est == h_min), ]$sim.CI
   min_val <- h_min - h_ci
 
   # add comparison column to df
-  colnames(df_pair) <- c(colnames(df_pair[, 1:4]), "Comp")
-  df_pair$Comp <- paste0(factor_a, factor_b)
+  df_pair$comp <- paste0(factor_a, "/", factor_b)
 
   # set output
   grDevices::png(
@@ -65,13 +68,17 @@ spline_diff <- function(gam_model,
 
   # draw plot
   graphics::par(mar = c(5, 5, 4, 2), family = "Times New Roman")
+
+  set.seed(123)
   p_summary <- utils::capture.output(itsadug::plot_diff(
     gam_model,
     view = "nodeID",
     comp = comp,
-    rm.ranef = T,
-    print.summary = T,
-    main = paste0("Difference Scores, ", factor_a, "-", factor_b),
+    sim.ci = TRUE,
+    n.grid = 100,
+    rm.ranef = TRUE,
+    print.summary = TRUE,
+    main = paste0(tract, "Difference Scores, ", factor_a, "-", factor_b),
     ylab = "Est. difference",
     xlab = "Tract Node",
     cex.lab = 2,
@@ -82,22 +89,24 @@ spline_diff <- function(gam_model,
   ))
 
   # determine sig nodes
-  sig_regions <- p_summary[10:length(p_summary)]
-  sig_regions <- gsub("\\t", "", sig_regions)
+  if (p_summary[14] != "Difference is not significant.") {
+    sig_regions <- p_summary[15:length(p_summary)]
+    sig_regions <- gsub("\\t", "", sig_regions)
 
-  # make list of start and end nodes, for shading
-  sig_list <- as.list(strsplit(sig_regions, " - "))
-  start_list <- as.numeric(sapply(sig_list, "[[", 1))
-  end_list <- as.numeric(sapply(sig_list, "[[", 2))
+    # make list of start and end nodes, for shading
+    sig_list <- as.list(strsplit(sig_regions, " - "))
+    start_list <- as.numeric(sapply(sig_list, "[[", 1))
+    end_list <- as.numeric(sapply(sig_list, "[[", 2))
 
-  # shade significant regions
-  for (h_ind in 1:length(start_list)) {
-    graphics::polygon(
-      x = c(rep(start_list[h_ind],2), rep(end_list[h_ind], 2)),
-      y = c(0, min_val, min_val, 0),
-      col = grDevices::rgb(1, 0, 0, 0.2),
-      border = NA
-    )
+    # shade significant regions
+    for (h_ind in 1:length(start_list)) {
+      graphics::polygon(
+        x = c(rep(start_list[h_ind],2), rep(end_list[h_ind], 2)),
+        y = c(0, min_val, min_val, 0),
+        col = grDevices::rgb(1, 0, 0, 0.2),
+        border = NA
+      )
+    }
   }
 
   graphics::par(mar = c(5, 4, 4, 2))

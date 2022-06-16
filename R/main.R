@@ -16,6 +16,11 @@
 #' @param permute If TRUE, estimate the null distribution of the overall
 #'     group coefficient using a permutation test.
 #' @param n_permute Number of permutations to simulate the null distribution
+#' @param k Dimension of the basis used to represent the node smoothing term,
+#'     If k = 'auto', this function will attempt to find the best value
+#' @param family Distribution to use for the gam. Must be either 'gamma',
+#'     'beta', or 'auto'. If 'auto', this function will select the best fit
+#'     between beta and gamma distributions.
 #' @param ... Arguments to pass to read.afq.files
 #'
 #' @export
@@ -42,6 +47,8 @@ tractr_bwas <- function(df_afq = NULL,
                         comp_list = unique(df_afq[[group.by]]),
                         permute = FALSE,
                         n_permute = 100,
+                        k = "auto",
+                        family = "auto",
                         ...) {
   if (is.null(df_afq)) {
     df_afq <- read.afq.files(..., index = participant.id, dwi_metrics = c(dwi_metric))
@@ -52,6 +59,7 @@ tractr_bwas <- function(df_afq = NULL,
 
   for (tract in tracts) {
     pb$tick()
+    print(tract)
     tractr_single_bundle(df_afq = df_afq,
                          tract = tract,
                          dwi_metric = dwi_metric,
@@ -63,6 +71,8 @@ tractr_bwas <- function(df_afq = NULL,
                          comp_list = comp_list,
                          permute = permute,
                          n_permute = n_permute,
+                         k = k,
+                         family = family,
                          ...)
   }
 }
@@ -86,6 +96,11 @@ tractr_bwas <- function(df_afq = NULL,
 #' @param permute If TRUE, estimate the null distribution of the overall
 #'     group coefficient using a permutation test.
 #' @param n_permute Number of permutations to simulate the null distribution
+#' @param k Dimension of the basis used to represent the node smoothing term,
+#'     If k = 'auto', this function will attempt to find the best value
+#' @param family Distribution to use for the gam. Must be either 'gamma',
+#'     'beta', or 'auto'. If 'auto', this function will select the best fit
+#'     between beta and gamma distributions.
 #' @param ... Arguments to pass to read.afq.files
 #'
 #' @export
@@ -113,6 +128,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                                  comp_list = unique(df_afq[[group.by]]),
                                  permute = FALSE,
                                  n_permute = 100,
+                                 k = "auto",
+                                 family = "auto",
                                  ...) {
   # Create output directories
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
@@ -158,8 +175,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                      smooth_terms = smooth_terms,
                      group.by = group.by,
                      participant.id = participant.id,
-                     k = "auto",
-                     family = "auto",
+                     k = k,
+                     family = family,
                      tract_name = tract,
                      out_dir = stats_dir,
                      save_output = TRUE)
@@ -180,7 +197,7 @@ tractr_single_bundle <- function(df_afq = NULL,
                       value = TRUE)
     observed_coef = gam_fit$coefficients[[coef_name]]
     group_p_value = sum(
-      abs(df_perm$group_coefs) >= observed_coef
+      abs(df_perm$group_coefs) >= abs(observed_coef)
     ) / length(df_perm$group_coefs)
 
     print(paste0("Bootstrapped group p value = ", group_p_value))

@@ -1,5 +1,7 @@
 #' Build a GAM formula dynamically
 #'
+#'
+#'
 #' @param target Diffusion metric to model
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
@@ -122,7 +124,7 @@ fit_gam <- function(df_tract,
       k.indices <- list(0.0, 0.0)
       k.pvals <- list(0.0, 0.0)
 
-      while (any(k.indices < 1.0) & any(k.pvals <= 0.05)) {
+      while (any(k.indices < 1.0) | any(k.pvals <= 0.05)) {
         k.model <- k.model * 2
         formula <- build_formula(target = target,
                                  covariates = covariates,

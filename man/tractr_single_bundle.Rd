@@ -16,6 +16,8 @@ tractr_single_bundle(
   comp_list = unique(df_afq[[group.by]]),
   permute = FALSE,
   n_permute = 100,
+  k = "auto",
+  family = "auto",
   ...
 )
 }
@@ -47,6 +49,13 @@ These should be values from the group column in the AFQ CSV file.}
 group coefficient using a permutation test.}
 
 \item{n_permute}{Number of permutations to simulate the null distribution}
+
+\item{k}{Dimension of the basis used to represent the node smoothing term,
+If k = 'auto', this function will attempt to find the best value}
+
+\item{family}{Distribution to use for the gam. Must be either 'gamma',
+'beta', or 'auto'. If 'auto', this function will select the best fit
+between beta and gamma distributions.}
 
 \item{...}{Arguments to pass to read.afq.files}
 }

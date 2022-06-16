@@ -107,6 +107,7 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
   h_title <- paste0("GAM fit of ", h_tract, " ", dwi_metric, " values")
 
   # draw plot
+  options(warn=-1)
   p <- ggplot2::ggplot(data = df_pred) +
     ggplot2::geom_smooth(mapping = ggplot2::aes_string(
       x = "nodeID", y = "fit", color = group.by
@@ -117,6 +118,7 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     ggplot2::theme(text = ggplot2::element_text(
       family = "Times New Roman", face = "bold", size = 14
     ))
+  options(warn=0)
 
   # Use colorblind palette for fills and lines
   p + ggplot2::scale_color_manual(
