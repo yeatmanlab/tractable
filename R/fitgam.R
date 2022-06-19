@@ -1,7 +1,5 @@
 #' Build a GAM formula dynamically
 #'
-#'
-#'
 #' @param target Diffusion metric to model
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
@@ -184,14 +182,14 @@ fit_gam <- function(df_tract,
     utils::capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
       file = file.path(out_dir, paste0(
-        "k_check_gam_", family, "_", tract_name, ".txt"
+        "k_check_gam_", family, "_", sub(" ", "_", tract_name), ".txt"
       ))
     )
 
     utils::capture.output(
       summary(gam_fit),
       file = file.path(out_dir, paste0(
-        "fit_summary_gam_", family, "_", tract_name, ".txt"
+        "fit_summary_gam_", family, "_", sub(" ", "_", tract_name), ".txt"
       ))
     )
   }

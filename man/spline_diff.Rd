@@ -4,7 +4,15 @@
 \alias{spline_diff}
 \title{Calculate and plot difference between two splines}
 \usage{
-spline_diff(gam_model, tract, group.by = "group", factor_a, factor_b, out_dir)
+spline_diff(
+  gam_model,
+  tract,
+  group.by = "group",
+  factor_a,
+  factor_b,
+  save_output = TRUE,
+  out_dir
+)
 }
 \arguments{
 \item{gam_model}{GAM object, produced by gam/bam}
@@ -16,6 +24,8 @@ spline_diff(gam_model, tract, group.by = "group", factor_a, factor_b, out_dir)
 \item{factor_a}{First group factor, string}
 
 \item{factor_b}{Second group factor, string}
+
+\item{save_output}{Boolean. If TRUE, save plot output}
 
 \item{out_dir}{Directory in which to save plots}
 }

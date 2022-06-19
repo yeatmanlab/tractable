@@ -8,6 +8,7 @@ permutation_test(
   df_tract,
   n_permutations,
   dwi_metric,
+  tract,
   group.by = "group",
   participant.id = "subjectID",
   sample_uniform = FALSE,
@@ -15,7 +16,9 @@ permutation_test(
   smooth_terms = NULL,
   k = NULL,
   family = NULL,
-  formula = NULL
+  formula = NULL,
+  factor_a = NULL,
+  factor_b = NULL
 )
 }
 \arguments{
@@ -24,6 +27,8 @@ permutation_test(
 \item{n_permutations}{Number of permutation tests to perform}
 
 \item{dwi_metric}{The diffusion metric to model (e.g. "FA", "MD")}
+
+\item{tract}{AFQ tract name}
 
 \item{group.by}{The grouping variable used to group nodeID smoothing terms}
 
@@ -46,6 +51,10 @@ the smoothing terms over nodes and the random effect due to subjectID.}
 \item{formula}{Optional explicit formula to use for the GAM. If provided,
 this will override the dynamically generated formula build from the
 target, covariate, and k inputs. Default = NULL.}
+
+\item{factor_a}{First group factor, string}
+
+\item{factor_b}{Second group factor, string}
 }
 \value{
 Dataframe with permutation test coefficients

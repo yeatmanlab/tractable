@@ -181,39 +181,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                      out_dir = stats_dir,
                      save_output = TRUE)
 
-  if (permute) {
-    df_perm <- permutation_test(df_tract = df_tract,
-                                n_permutations = n_permute,
-                                dwi_metric = dwi_metric,
-                                group.by = group.by,
-                                participant.id = participant.id,
-                                covariates = covariates,
-                                sample_uniform = TRUE,
-                                family = gam_fit$family,
-                                formula = gam_fit$formula)
-
-    coef_name <- grep(paste0("^", group.by),
-                      names(gam_fit$coefficients),
-                      value = TRUE)
-    observed_coef = gam_fit$coefficients[[coef_name]]
-    group_p_value = sum(
-      abs(df_perm$group_coefs) >= abs(observed_coef)
-    ) / length(df_perm$group_coefs)
-
-    print(paste0("Bootstrapped group p value = ", group_p_value))
-  }
-
   for (this_tract in tract_names) {
     this_df <- df_tract[which(df_tract$tractID == this_tract), ]
-
-    plot_gam_splines(gam_model = gam_fit,
-                     tract = this_tract,
-                     df_tract = df_tract,
-                     dwi_metric = dwi_metric,
-                     covariates = covariates,
-                     group.by = group.by,
-                     participant.id = participant.id,
-                     out_dir = plot_dir)
 
     if (tract == "all") {
       this_comp_list <- grep(paste0("^", this_tract),
@@ -223,6 +192,45 @@ tractr_single_bundle <- function(df_afq = NULL,
       this_comp_list <- comp_list
     }
 
+    if (permute) {
+      df_perm <- permutation_test(df_tract = this_df,
+                                  n_permutations = n_permute,
+                                  dwi_metric = dwi_metric,
+                                  tract = this_tract,
+                                  group.by = group.by,
+                                  participant.id = participant.id,
+                                  covariates = covariates,
+                                  sample_uniform = TRUE,
+                                  family = gam_fit$family,
+                                  formula = gam_fit$formula,
+                                  factor_a = this_comp_list[1],
+                                  factor_b = this_comp_list[2])
+
+      filename <- paste0("permutation_test_",
+                         sub(" ", "_", this_tract),
+                         ".csv")
+      utils::write.csv(df_perm, file.path(stats_dir, filename))
+
+      coef_name <- grep(paste0("^", group.by),
+                        names(gam_fit$coefficients),
+                        value = TRUE)
+      observed_coef = gam_fit$coefficients[[coef_name]]
+      group_p_value = sum(
+        abs(df_perm$group_coefs) >= abs(observed_coef)
+      ) / length(df_perm$group_coefs)
+
+      print(paste0("Bootstrapped group p value = ", group_p_value))
+    }
+
+    plot_gam_splines(gam_model = gam_fit,
+                     tract = this_tract,
+                     df_tract = this_df,
+                     dwi_metric = dwi_metric,
+                     covariates = covariates,
+                     group.by = group.by,
+                     participant.id = participant.id,
+                     out_dir = plot_dir)
+
     df_diff <- spline_diff(gam_model = gam_fit,
                            tract = tract,
                            group.by = group.by,
@@ -230,7 +238,9 @@ tractr_single_bundle <- function(df_afq = NULL,
                            factor_b = this_comp_list[2],
                            out_dir = plot_dir)
 
-    filename <- paste0("spline_diff_", this_tract, ".csv")
+    filename <- paste0("spline_diff_",
+                       sub(" ", "_", this_tract),
+                       ".csv")
     utils::write.csv(df_diff, file.path(stats_dir, filename))
   }
 }

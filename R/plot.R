@@ -125,7 +125,9 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     values = cbbPalette,
   )
 
-  plot_filename <- file.path(out_dir, paste0("plot_gam_", tract, ".png"))
+  plot_filename <- file.path(out_dir, paste0("plot_gam_",
+                                             sub(" ", "_", tract),
+                                             ".png"))
 
   ggplot2::ggsave(
     plot_filename,

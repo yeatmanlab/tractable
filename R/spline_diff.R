@@ -9,6 +9,7 @@
 #' @param group.by The grouping variable used to group nodeID smoothing terms
 #' @param factor_a First group factor, string
 #' @param factor_b Second group factor, string
+#' @param save_output Boolean. If TRUE, save plot output
 #' @param out_dir Directory in which to save plots
 #'
 #' @return A dataframe of spline differences at each node
@@ -33,6 +34,7 @@ spline_diff <- function(gam_model,
                         group.by = "group",
                         factor_a,
                         factor_b,
+                        save_output = TRUE,
                         out_dir) {
   # determine bottom of plot
   comp <- list(c(factor_a, factor_b))
@@ -58,59 +60,61 @@ spline_diff <- function(gam_model,
   # add comparison column to df
   df_pair$comp <- paste0(factor_a, "/", factor_b)
 
-  # set output
-  grDevices::png(
-    filename = file.path(out_dir, paste0(
-      "plot_diff_", tract, "_pair.png"
-    )),
-    width = 600, height = 600
-  )
+  if (save_output) {
+    # set output
+    grDevices::png(
+      filename = file.path(out_dir, paste0(
+        "plot_diff_", sub(" ", "_", tract), "_pair.png"
+      )),
+      width = 600, height = 600
+    )
 
-  # draw plot
-  graphics::par(mar = c(5, 5, 4, 2), family = "Times New Roman")
+    # draw plot
+    graphics::par(mar = c(5, 5, 4, 2), family = "Times New Roman")
 
-  set.seed(123)
-  p_summary <- utils::capture.output(itsadug::plot_diff(
-    gam_model,
-    view = "nodeID",
-    comp = comp,
-    sim.ci = TRUE,
-    n.grid = 100,
-    rm.ranef = TRUE,
-    print.summary = TRUE,
-    main = paste0(tract, "Difference Scores, ", factor_a, "-", factor_b),
-    ylab = "Est. difference",
-    xlab = "Tract Node",
-    cex.lab = 2,
-    cex.axis = 2,
-    cex.main = 2,
-    cex.sub = 1.5,
-    col.diff = "red"
-  ))
+    set.seed(123)
+    p_summary <- utils::capture.output(itsadug::plot_diff(
+      gam_model,
+      view = "nodeID",
+      comp = comp,
+      sim.ci = TRUE,
+      n.grid = 100,
+      rm.ranef = TRUE,
+      print.summary = TRUE,
+      main = paste0(tract, "Difference Scores, ", factor_a, "-", factor_b),
+      ylab = "Est. difference",
+      xlab = "Tract Node",
+      cex.lab = 2,
+      cex.axis = 2,
+      cex.main = 2,
+      cex.sub = 1.5,
+      col.diff = "red"
+    ))
 
-  # determine sig nodes
-  if (p_summary[14] != "Difference is not significant.") {
-    sig_regions <- p_summary[15:length(p_summary)]
-    sig_regions <- gsub("\\t", "", sig_regions)
+    # determine sig nodes
+    if (p_summary[14] != "Difference is not significant.") {
+      sig_regions <- p_summary[15:length(p_summary)]
+      sig_regions <- gsub("\\t", "", sig_regions)
 
-    # make list of start and end nodes, for shading
-    sig_list <- as.list(strsplit(sig_regions, " - "))
-    start_list <- as.numeric(sapply(sig_list, "[[", 1))
-    end_list <- as.numeric(sapply(sig_list, "[[", 2))
+      # make list of start and end nodes, for shading
+      sig_list <- as.list(strsplit(sig_regions, " - "))
+      start_list <- as.numeric(sapply(sig_list, "[[", 1))
+      end_list <- as.numeric(sapply(sig_list, "[[", 2))
 
-    # shade significant regions
-    for (h_ind in 1:length(start_list)) {
-      graphics::polygon(
-        x = c(rep(start_list[h_ind],2), rep(end_list[h_ind], 2)),
-        y = c(0, min_val, min_val, 0),
-        col = grDevices::rgb(1, 0, 0, 0.2),
-        border = NA
-      )
+      # shade significant regions
+      for (h_ind in 1:length(start_list)) {
+        graphics::polygon(
+          x = c(rep(start_list[h_ind],2), rep(end_list[h_ind], 2)),
+          y = c(0, min_val, min_val, 0),
+          col = grDevices::rgb(1, 0, 0, 0.2),
+          border = NA
+        )
+      }
     }
-  }
 
-  graphics::par(mar = c(5, 4, 4, 2))
-  grDevices::dev.off()
+    graphics::par(mar = c(5, 4, 4, 2))
+    grDevices::dev.off()
+  }
 
   return(df_pair)
 }

@@ -64,6 +64,7 @@ shuffle_df <- function(input_df, dwi_metric, group.by = "group", participant.id 
 #' @param df_tract AFQ Dataframe of node metric values for single tract
 #' @param n_permutations Number of permutation tests to perform
 #' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
+#' @param tract AFQ tract name
 #' @param group.by The grouping variable used to group nodeID smoothing terms
 #' @param participant.id The name of the column that encodes participant ID
 #' @param sample_uniform Boolean flag. If TRUE, shuffling should sample
@@ -78,6 +79,8 @@ shuffle_df <- function(input_df, dwi_metric, group.by = "group", participant.id 
 #' @param formula Optional explicit formula to use for the GAM. If provided,
 #'     this will override the dynamically generated formula build from the
 #'     target, covariate, and k inputs. Default = NULL.
+#' @param factor_a First group factor, string
+#' @param factor_b Second group factor, string
 #'
 #' @return Dataframe with permutation test coefficients
 #' @export
@@ -96,6 +99,7 @@ shuffle_df <- function(input_df, dwi_metric, group.by = "group", participant.id 
 permutation_test <- function(df_tract,
                              n_permutations,
                              dwi_metric,
+                             tract,
                              group.by = "group",
                              participant.id = "subjectID",
                              sample_uniform = FALSE,
@@ -103,8 +107,13 @@ permutation_test <- function(df_tract,
                              smooth_terms = NULL,
                              k = NULL,
                              family = NULL,
-                             formula = NULL) {
-  coefs = vector(mode="list", length=n_permutations)
+                             formula = NULL,
+                             factor_a = NULL,
+                             factor_b = NULL) {
+  coefs <- vector(mode = "list", length = n_permutations)
+  node_diffs <- data.frame(nodeID = numeric(0),
+                           est = numeric(0),
+                           permIdx = numeric(0))
 
   pb <- progress::progress_bar$new(total = n_permutations)
   for (idx in 1:n_permutations) {
@@ -131,10 +140,30 @@ permutation_test <- function(df_tract,
                       value = TRUE)
 
     coefs[[idx]] <- gam_shuffle$coefficients[[coef_name]]
+
+    if (!is.null(factor_a) & !is.null(factor_b)) {
+      df_pair <- spline_diff(gam_model = gam_shuffle,
+                             tract = tract,
+                             group.by = group.by,
+                             factor_a,
+                             factor_b,
+                             save_output = FALSE,
+                             out_dir = NULL)
+
+      df_pair$permIdx <- idx
+      df_pair <- dplyr::select(df_pair, c("nodeID", "est", "permIdx"))
+      node_diffs <- rbind(node_diffs, df_pair)
+    }
   }
 
-  group_coefs <- unlist(coefs)
-  df_permutation_test = data.frame(group_coefs)
+  df_permutation_test <- tidyr::pivot_wider(
+    node_diffs,
+    names_from = "nodeID",
+    names_prefix = "node_",
+    values_from = "est",
+    id_cols = "permIdx"
+  )
+  df_permutation_test$group_coefs <- unlist(coefs)
 
   return(df_permutation_test)
 }
