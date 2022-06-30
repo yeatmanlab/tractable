@@ -13,8 +13,8 @@ tractr_bwas(
   covariates = c(group.by),
   smooth_terms = NULL,
   comp_list = unique(df_afq[[group.by]]),
-  permute = FALSE,
-  n_permute = 100,
+  resampling_technique = NULL,
+  n_samples = 100,
   k = "auto",
   family = "auto",
   ...
@@ -42,10 +42,13 @@ the smoothing terms over nodes and the random effect due to subjectID.}
 \item{comp_list}{List of factor strings for pairwise comparison.
 These should be values from the group column in the AFQ CSV file.}
 
-\item{permute}{If TRUE, estimate the null distribution of the overall
-group coefficient using a permutation test.}
+\item{resampling_technique}{Type of resampling technique, either "boostrap,"
+"permutation," or NULL. If NULL, no resampling test is performed. If
+"bootstrap," use bootstrap resampling to estimate confidence intervals.
+If "permutation," use permutation resampling to estimate the null
+distribution.}
 
-\item{n_permute}{Number of permutations to simulate the null distribution}
+\item{n_samples}{Number of bootstrap or permutation samples}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term,
 If k = 'auto', this function will attempt to find the best value}
@@ -67,8 +70,8 @@ tractr.bwas(df_afq = df_afq,
             dwi_metric = "dti_fa",
             covariates = c("sex", "group"),
             comp_list = c("0", "1"),
-            out_dir = ".",
-            permute = TRUE,
-            n_permute = 100)
+            out_dir = "tractr_results",
+            resampling_technique = "bootstrap",
+            n_samples = 100)
 }
 }

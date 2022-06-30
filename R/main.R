@@ -13,9 +13,12 @@
 #' @param comp_list List of factor strings for pairwise comparison.
 #'     These should be values from the group column in the AFQ CSV file.
 #' @param out_dir Directory in which to save text output and plots
-#' @param permute If TRUE, estimate the null distribution of the overall
-#'     group coefficient using a permutation test.
-#' @param n_permute Number of permutations to simulate the null distribution
+#' @param resampling_technique Type of resampling technique, either "boostrap,"
+#'     "permutation," or NULL. If NULL, no resampling test is performed. If
+#'     "bootstrap," use bootstrap resampling to estimate confidence intervals.
+#'     If "permutation," use permutation resampling to estimate the null
+#'     distribution.
+#' @param n_samples Number of bootstrap or permutation samples
 #' @param k Dimension of the basis used to represent the node smoothing term,
 #'     If k = 'auto', this function will attempt to find the best value
 #' @param family Distribution to use for the gam. Must be either 'gamma',
@@ -33,9 +36,9 @@
 #'             dwi_metric = "dti_fa",
 #'             covariates = c("sex", "group"),
 #'             comp_list = c("0", "1"),
-#'             out_dir = ".",
-#'             permute = TRUE,
-#'             n_permute = 100)
+#'             out_dir = "tractr_results",
+#'             resampling_technique = "bootstrap",
+#'             n_samples = 100)
 #' }
 tractr_bwas <- function(df_afq = NULL,
                         dwi_metric,
@@ -45,8 +48,8 @@ tractr_bwas <- function(df_afq = NULL,
                         covariates = c(group.by),
                         smooth_terms = NULL,
                         comp_list = unique(df_afq[[group.by]]),
-                        permute = FALSE,
-                        n_permute = 100,
+                        resampling_technique = NULL,
+                        n_samples = 100,
                         k = "auto",
                         family = "auto",
                         ...) {
@@ -69,8 +72,8 @@ tractr_bwas <- function(df_afq = NULL,
                          covariates = covariates,
                          smooth_terms = smooth_terms,
                          comp_list = comp_list,
-                         permute = permute,
-                         n_permute = n_permute,
+                         resampling_technique = resampling_technique,
+                         n_samples = n_samples,
                          k = k,
                          family = family,
                          ...)
@@ -93,9 +96,12 @@ tractr_bwas <- function(df_afq = NULL,
 #' @param comp_list List of factor strings for pairwise comparison.
 #'     These should be values from the group column in the AFQ CSV file.
 #' @param out_dir Directory in which to save text output and plots
-#' @param permute If TRUE, estimate the null distribution of the overall
-#'     group coefficient using a permutation test.
-#' @param n_permute Number of permutations to simulate the null distribution
+#' @param resampling_technique Type of resampling technique, either "boostrap,"
+#'     "permute," or NULL. If NULL, no resampling test is performed. If
+#'     "bootstrap," use bootstrap resampling to estimate confidence intervals.
+#'     If "permute," use permutation resampling to estimate the null
+#'     distribution.
+#' @param n_samples Number of bootstrap or permutation samples
 #' @param k Dimension of the basis used to represent the node smoothing term,
 #'     If k = 'auto', this function will attempt to find the best value
 #' @param family Distribution to use for the gam. Must be either 'gamma',
@@ -114,8 +120,8 @@ tractr_bwas <- function(df_afq = NULL,
 #'                      covariates = c("sex", "group"),
 #'                      comp_list = c("0", "1"),
 #'                      out_dir = ".",
-#'                      permute = TRUE,
-#'                      n_permute = 100)
+#'                      resampling_technique = "bootstrap",
+#'                      n_samples = 100)
 #' }
 tractr_single_bundle <- function(df_afq = NULL,
                                  tract,
@@ -126,8 +132,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                                  covariates = c(group.by),
                                  smooth_terms = NULL,
                                  comp_list = unique(df_afq[[group.by]]),
-                                 permute = FALSE,
-                                 n_permute = 100,
+                                 resampling_technique = NULL,
+                                 n_samples = 100,
                                  k = "auto",
                                  family = "auto",
                                  ...) {
@@ -192,38 +198,42 @@ tractr_single_bundle <- function(df_afq = NULL,
       this_comp_list <- comp_list
     }
 
-    if (permute) {
-      df_perm <- permutation_test(df_tract = this_df,
-                                  n_permutations = n_permute,
-                                  dwi_metric = dwi_metric,
-                                  tract = this_tract,
-                                  group.by = group.by,
-                                  participant.id = participant.id,
-                                  covariates = covariates,
-                                  sample_uniform = TRUE,
-                                  family = gam_fit$family,
-                                  formula = gam_fit$formula,
-                                  factor_a = this_comp_list[1],
-                                  factor_b = this_comp_list[2])
+    if (!is.null(resampling_technique)) {
+      permute <- resampling_technique == "permute"
 
-      filename <- paste0("permutation_test_",
+      df_resampling <- sampling_test(df_tract = this_df,
+                                     n_samples = n_samples,
+                                     dwi_metric = dwi_metric,
+                                     tract = this_tract,
+                                     group.by = group.by,
+                                     participant.id = participant.id,
+                                     covariates = covariates,
+                                     sample_uniform = TRUE,
+                                     family = gam_fit$family,
+                                     formula = gam_fit$formula,
+                                     factor_a = this_comp_list[1],
+                                     factor_b = this_comp_list[2],
+                                     permute = permute)
+
+      filename <- paste0(resampling_technique,
+                         "_",
                          sub(" ", "_", this_tract),
                          ".csv")
-      utils::write.csv(df_perm,
+      utils::write.csv(df_resampling,
                        file.path(stats_dir, filename),
                        row.names = FALSE)
 
-      if (group.by %in% covariates) {
-        coef_name <- grep(paste0("^", group.by),
-                          names(gam_fit$coefficients),
-                          value = TRUE)
-        observed_coef = gam_fit$coefficients[[coef_name]]
-        group_p_value = sum(
-          abs(df_perm$group_coefs) >= abs(observed_coef)
-        ) / length(df_perm$group_coefs)
-
-        print(paste0("Bootstrapped group p value = ", group_p_value))
-      }
+      # if (group.by %in% covariates) {
+      #   coef_name <- grep(paste0("^", group.by),
+      #                     names(gam_fit$coefficients),
+      #                     value = TRUE)
+      #   observed_coef = gam_fit$coefficients[[coef_name]]
+      #   group_p_value = sum(
+      #     abs(df_resampling$group_coefs) >= abs(observed_coef)
+      #   ) / length(df_resampling$group_coefs)
+      #
+      #   print(paste0("Bootstrapped group p value = ", group_p_value))
+      # }
     }
 
     plot_gam_splines(gam_model = gam_fit,

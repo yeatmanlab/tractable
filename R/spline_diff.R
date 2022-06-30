@@ -40,8 +40,6 @@ spline_diff <- function(gam_model,
   comp <- list(c(factor_a, factor_b))
   names(comp) <- c(group.by)
 
-  set.seed(123)
-
   df_pair <- itsadug::plot_diff(
     gam_model,
     view = "nodeID",
@@ -49,12 +47,12 @@ spline_diff <- function(gam_model,
     rm.ranef = TRUE,
     plot = FALSE,
     print.summary = FALSE,
-    sim.ci = TRUE,
+    # sim.ci = TRUE,
     n.grid = 100,
   )
 
   h_min <- min(df_pair$est)
-  h_ci <- df_pair[which(df_pair$est == h_min), ]$sim.CI
+  h_ci <- df_pair[which(df_pair$est == h_min), ]$CI
   min_val <- h_min - h_ci
 
   # add comparison column to df
@@ -72,12 +70,11 @@ spline_diff <- function(gam_model,
     # draw plot
     graphics::par(mar = c(5, 5, 4, 2), family = "Times New Roman")
 
-    set.seed(123)
     p_summary <- utils::capture.output(itsadug::plot_diff(
       gam_model,
       view = "nodeID",
       comp = comp,
-      sim.ci = TRUE,
+      # sim.ci = TRUE,
       n.grid = 100,
       rm.ranef = TRUE,
       print.summary = TRUE,
