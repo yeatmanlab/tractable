@@ -110,7 +110,9 @@ permutation_test <- function(df_tract,
                              formula = NULL,
                              factor_a = NULL,
                              factor_b = NULL) {
-  coefs <- vector(mode = "list", length = n_permutations)
+  if (group.by %in% covariates) {
+    coefs <- vector(mode = "list", length = n_permutations)
+  }
   node_diffs <- data.frame(nodeID = numeric(0),
                            est = numeric(0),
                            permIdx = numeric(0))
@@ -135,11 +137,13 @@ permutation_test <- function(df_tract,
                            k = k,
                            family = family)
 
-    coef_name <- grep(paste0("^", group.by),
-                      names(gam_shuffle$coefficients),
-                      value = TRUE)
+    if (group.by %in% covariates) {
+      coef_name <- grep(paste0("^", group.by),
+                        names(gam_shuffle$coefficients),
+                        value = TRUE)
 
-    coefs[[idx]] <- gam_shuffle$coefficients[[coef_name]]
+      coefs[[idx]] <- gam_shuffle$coefficients[[coef_name]]
+    }
 
     if (!is.null(factor_a) & !is.null(factor_b)) {
       df_pair <- spline_diff(gam_model = gam_shuffle,
@@ -163,7 +167,10 @@ permutation_test <- function(df_tract,
     values_from = "est",
     id_cols = "permIdx"
   )
-  df_permutation_test$group_coefs <- unlist(coefs)
+
+  if (group.by %in% covariates) {
+    df_permutation_test$group_coefs <- unlist(coefs)
+  }
 
   return(df_permutation_test)
 }

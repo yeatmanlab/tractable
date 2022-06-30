@@ -108,7 +108,7 @@ tractr_bwas <- function(df_afq = NULL,
 #' @examples
 #' \dontrun{
 #' df_afq = read.csv("/path/to/afq/output.csv")
-#' tractr.single.bundle(df_afq = df_afq,
+#' tractr_single_bundle(df_afq = df_afq,
 #'                      tract = "CST_R",
 #'                      dwi_metric = "dti_fa",
 #'                      covariates = c("sex", "group"),
@@ -211,15 +211,17 @@ tractr_single_bundle <- function(df_afq = NULL,
                          ".csv")
       utils::write.csv(df_perm, file.path(stats_dir, filename))
 
-      coef_name <- grep(paste0("^", group.by),
-                        names(gam_fit$coefficients),
-                        value = TRUE)
-      observed_coef = gam_fit$coefficients[[coef_name]]
-      group_p_value = sum(
-        abs(df_perm$group_coefs) >= abs(observed_coef)
-      ) / length(df_perm$group_coefs)
+      if (group.by %in% covariates) {
+        coef_name <- grep(paste0("^", group.by),
+                          names(gam_fit$coefficients),
+                          value = TRUE)
+        observed_coef = gam_fit$coefficients[[coef_name]]
+        group_p_value = sum(
+          abs(df_perm$group_coefs) >= abs(observed_coef)
+        ) / length(df_perm$group_coefs)
 
-      print(paste0("Bootstrapped group p value = ", group_p_value))
+        print(paste0("Bootstrapped group p value = ", group_p_value))
+      }
     }
 
     plot_gam_splines(gam_model = gam_fit,

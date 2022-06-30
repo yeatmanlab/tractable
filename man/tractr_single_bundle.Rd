@@ -65,7 +65,7 @@ Analyze group differences in a single dMRI tract profile using GAMs
 \examples{
 \dontrun{
 df_afq = read.csv("/path/to/afq/output.csv")
-tractr.single.bundle(df_afq = df_afq,
+tractr_single_bundle(df_afq = df_afq,
                      tract = "CST_R",
                      dwi_metric = "dti_fa",
                      covariates = c("sex", "group"),
