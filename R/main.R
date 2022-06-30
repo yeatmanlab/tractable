@@ -209,7 +209,9 @@ tractr_single_bundle <- function(df_afq = NULL,
       filename <- paste0("permutation_test_",
                          sub(" ", "_", this_tract),
                          ".csv")
-      utils::write.csv(df_perm, file.path(stats_dir, filename))
+      utils::write.csv(df_perm,
+                       file.path(stats_dir, filename),
+                       row.names = FALSE)
 
       if (group.by %in% covariates) {
         coef_name <- grep(paste0("^", group.by),
@@ -243,6 +245,8 @@ tractr_single_bundle <- function(df_afq = NULL,
     filename <- paste0("spline_diff_",
                        sub(" ", "_", this_tract),
                        ".csv")
-    utils::write.csv(df_diff, file.path(stats_dir, filename))
+    utils::write.csv(df_diff,
+                     file.path(stats_dir, filename),
+                     row.names = FALSE)
   }
 }
