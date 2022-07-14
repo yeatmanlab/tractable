@@ -11,6 +11,7 @@ spline_diff(
   factor_a,
   factor_b,
   save_output = TRUE,
+  sim.ci = FALSE,
   out_dir
 )
 }
@@ -26,6 +27,16 @@ spline_diff(
 \item{factor_b}{Second group factor, string}
 
 \item{save_output}{Boolean. If TRUE, save plot output}
+
+\item{sim.ci}{Logical: Using simultaneous confidence intervals or not
+(default set to FALSE). The implementation of simultaneous CIs follows
+Gavin Simpson's blog of December 15, 2016:
+http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
+This interval is calculated from simulations based. Please specify a seed
+(e.g., set.seed(123)) for reproducable results. Note: in contrast with
+Gavin Simpson's code, here the Bayesian posterior covariance matrix of
+the parameters is uncertainty corrected (unconditional=TRUE) to reflect
+the uncertainty on the estimation of smoothness parameters.}
 
 \item{out_dir}{Directory in which to save plots}
 }

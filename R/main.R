@@ -107,6 +107,15 @@ tractr_bwas <- function(df_afq = NULL,
 #' @param family Distribution to use for the gam. Must be either 'gamma',
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
+#' @param sim.ci Logical: Using simultaneous confidence intervals or not
+#'   (default set to FALSE). The implementation of simultaneous CIs follows
+#'   Gavin Simpson's blog of December 15, 2016:
+#'   http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
+#'   This interval is calculated from simulations based. Please specify a seed
+#'   (e.g., set.seed(123)) for reproducable results. Note: in contrast with
+#'   Gavin Simpson's code, here the Bayesian posterior covariance matrix of
+#'   the parameters is uncertainty corrected (unconditional=TRUE) to reflect
+#'   the uncertainty on the estimation of smoothness parameters.
 #' @param ... Arguments to pass to read.afq.files
 #'
 #' @export
@@ -136,6 +145,7 @@ tractr_single_bundle <- function(df_afq = NULL,
                                  n_samples = 100,
                                  k = "auto",
                                  family = "auto",
+                                 sim.ci = FALSE,
                                  ...) {
   # Create output directories
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
@@ -250,7 +260,9 @@ tractr_single_bundle <- function(df_afq = NULL,
                            group.by = group.by,
                            factor_a = this_comp_list[1],
                            factor_b = this_comp_list[2],
-                           out_dir = plot_dir)
+                           out_dir = plot_dir,
+                           save_output = FALSE,
+                           sim.ci = sim.ci)
 
     filename <- paste0("spline_diff_",
                        sub(" ", "_", this_tract),

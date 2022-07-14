@@ -18,6 +18,7 @@ tractr_single_bundle(
   n_samples = 100,
   k = "auto",
   family = "auto",
+  sim.ci = FALSE,
   ...
 )
 }
@@ -59,6 +60,16 @@ If k = 'auto', this function will attempt to find the best value}
 \item{family}{Distribution to use for the gam. Must be either 'gamma',
 'beta', or 'auto'. If 'auto', this function will select the best fit
 between beta and gamma distributions.}
+
+\item{sim.ci}{Logical: Using simultaneous confidence intervals or not
+(default set to FALSE). The implementation of simultaneous CIs follows
+Gavin Simpson's blog of December 15, 2016:
+http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
+This interval is calculated from simulations based. Please specify a seed
+(e.g., set.seed(123)) for reproducable results. Note: in contrast with
+Gavin Simpson's code, here the Bayesian posterior covariance matrix of
+the parameters is uncertainty corrected (unconditional=TRUE) to reflect
+the uncertainty on the estimation of smoothness parameters.}
 
 \item{...}{Arguments to pass to read.afq.files}
 }

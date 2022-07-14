@@ -10,6 +10,15 @@
 #' @param factor_a First group factor, string
 #' @param factor_b Second group factor, string
 #' @param save_output Boolean. If TRUE, save plot output
+#' @param sim.ci Logical: Using simultaneous confidence intervals or not
+#'   (default set to FALSE). The implementation of simultaneous CIs follows
+#'   Gavin Simpson's blog of December 15, 2016:
+#'   http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
+#'   This interval is calculated from simulations based. Please specify a seed
+#'   (e.g., set.seed(123)) for reproducable results. Note: in contrast with
+#'   Gavin Simpson's code, here the Bayesian posterior covariance matrix of
+#'   the parameters is uncertainty corrected (unconditional=TRUE) to reflect
+#'   the uncertainty on the estimation of smoothness parameters.
 #' @param out_dir Directory in which to save plots
 #'
 #' @return A dataframe of spline differences at each node
@@ -35,6 +44,7 @@ spline_diff <- function(gam_model,
                         factor_a,
                         factor_b,
                         save_output = TRUE,
+                        sim.ci = FALSE,
                         out_dir) {
   # determine bottom of plot
   comp <- list(c(factor_a, factor_b))
@@ -47,7 +57,7 @@ spline_diff <- function(gam_model,
     rm.ranef = TRUE,
     plot = FALSE,
     print.summary = FALSE,
-    # sim.ci = TRUE,
+    sim.ci = sim.ci,
     n.grid = 100,
   )
 
