@@ -21,12 +21,22 @@
 #'                          covariates = c("group", "sex", "s(age, by=sex)"),
 #'                          k = 32)
 build_formula <- function(target, covariates, smooth_terms = NULL, group.by = "group", participant.id = "subjectID", k) {
-  vars <- paste0(covariates, collapse = "+")
-  node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
+  if (!is.null(covariates)) {
+    vars <- paste0(covariates, collapse = "+")
+  }
+  if (is.null(group.by)) {
+    node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
+  } else {
+    node_smooth <- paste0("s(nodeID, k=", k, ")")
+  }
   subject_random_effect <- paste0("s(", participant.id, ", bs = \"re\")")
-  after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
+  if (is.null(covariates)) {
+    after_tilde <- paste0(list(node_smooth, subject_random_effect), collapse = "+")
+  } else {
+    after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
+  }
   if (!is.null(smooth_terms)) {
-    after_tilde <- paste0(list(after_tilde, smooth_terms, collapse = "+"))
+    after_tilde <- paste0(list(after_tilde, smooth_terms), collapse = "+")
   }
   dyn_string <- paste0(target, " ~ ", after_tilde)
   formula = stats::as.formula(dyn_string)

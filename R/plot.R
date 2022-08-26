@@ -99,7 +99,10 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     df_pred[[covar]] <- df_tract[[covar]]
   }
 
-  df_pred[[group.by]] <- df_tract[[group.by]]
+  if (!is.null(group.by)) {
+    df_pred[[group.by]] <- df_tract[[group.by]]
+  }
+
   df_pred[[participant.id]] <- df_tract[[participant.id]]
 
   # set up for plot

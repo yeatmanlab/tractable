@@ -160,7 +160,10 @@ tractr_single_bundle <- function(df_afq = NULL,
     df_afq <- read.afq.files(..., index = participant.id, dwi_metrics = c(dwi_metric))
   }
 
-  df_afq[[group.by]] <- factor(df_afq[[group.by]])
+  if (!is.null(group.by)) {
+    df_afq[[group.by]] <- factor(df_afq[[group.by]])
+  }
+
   df_afq[[participant.id]] <- unclass(factor(df_afq[[participant.id]]))
 
   cols <- unique(c(participant.id,
@@ -255,20 +258,24 @@ tractr_single_bundle <- function(df_afq = NULL,
                      participant.id = participant.id,
                      out_dir = plot_dir)
 
-    df_diff <- spline_diff(gam_model = gam_fit,
-                           tract = tract,
-                           group.by = group.by,
-                           factor_a = this_comp_list[1],
-                           factor_b = this_comp_list[2],
-                           out_dir = plot_dir,
-                           save_output = FALSE,
-                           sim.ci = sim.ci)
+    if (!is.null(group.by)) {
+      df_diff <- spline_diff(gam_model = gam_fit,
+                             tract = tract,
+                             group.by = group.by,
+                             factor_a = this_comp_list[1],
+                             factor_b = this_comp_list[2],
+                             out_dir = plot_dir,
+                             save_output = FALSE,
+                             sim.ci = sim.ci)
 
-    filename <- paste0("spline_diff_",
-                       sub(" ", "_", this_tract),
-                       ".csv")
-    utils::write.csv(df_diff,
-                     file.path(stats_dir, filename),
-                     row.names = FALSE)
+      filename <- paste0("spline_diff_",
+                         sub(" ", "_", this_tract),
+                         ".csv")
+      utils::write.csv(df_diff,
+                       file.path(stats_dir, filename),
+                       row.names = FALSE)
+    }
   }
+
+  return(gam_fit)
 }
