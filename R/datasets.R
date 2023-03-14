@@ -96,8 +96,6 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
                          ... = ...)
   }
 
-  # Delete an empty index column if
-  pheno_df <- dplyr::select(pheno_df, -dplyr::any_of(""))
 
   # Select only the user supplied pheno columns
   if (!is.null(pheno_cols)) {
