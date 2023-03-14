@@ -96,7 +96,6 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
                          ... = ...)
   }
 
-
   # Select only the user supplied pheno columns
   if (!is.null(pheno_cols)) {
     pheno_df <- dplyr::select(pheno_df, unique(c(index.pheno, pheno_cols)))

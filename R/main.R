@@ -122,13 +122,17 @@ tractr_bwas <- function(df_afq = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' df_afq = read.csv("/path/to/afq/output.csv")
-#' tractr_single_bundle(df_afq = df_afq,
-#'                      tract = "CST_R",
-#'                      dwi_metric = "dti_fa",
-#'                      covariates = c("sex", "group"),
-#'                      comp_list = c("0", "1"),
+#' sarica <- read.afq.sarica()
+#' sarica$group <- factor(sarica$class)
+#' sarica$subjectID <- unclass(factor(sarica$subjectID))
+#' tractr_single_bundle(df_afq = sarica,
 #'                      out_dir = ".",
+#'                      tract = "Right Corticospinal",
+#'                      participant.id = "subjectID",
+#'                      group.by = "group",
+#'                      covariates = c("age","group"),
+#'                      dwi_metric = "fa",
+#'                      comp_list = c("ALS", "CTRL"),
 #'                      resampling_technique = "bootstrap",
 #'                      n_samples = 100)
 #' }
