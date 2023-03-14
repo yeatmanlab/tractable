@@ -74,12 +74,12 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
 
   # Determine separator from file suffix
   if (grepl("\\.tsv$", pheno_csv)) {
-    sep <- ""
+    sep <- "\t"
   } else {
     sep <- ","
   }
 
-  if (grepl("^s3://", pheno_csv)) {
+    if (grepl("^s3://", pheno_csv)) {
     # Read from S3
     uri <- parse.s3.uri(pheno_csv)
     pheno_df <- aws.s3::s3read_using(FUN=utils::read.csv,
