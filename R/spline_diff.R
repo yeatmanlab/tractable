@@ -49,7 +49,6 @@ spline_diff <- function(gam_model,
   # determine bottom of plot
   comp <- list(c(factor_a, factor_b))
   names(comp) <- c(group.by)
-
   df_pair <- itsadug::plot_diff(
     gam_model,
     view = "nodeID",

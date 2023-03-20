@@ -24,7 +24,7 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group.by = "g
   if (!is.null(covariates)) {
     vars <- paste0(covariates, collapse = "+")
   }
-  if (is.null(group.by)) {
+  if (!is.null(group.by)) {
     node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
   } else {
     node_smooth <- paste0("s(nodeID, k=", k, ")")
