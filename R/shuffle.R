@@ -174,6 +174,7 @@ sampling_test <- function(df_tract,
                           permute = FALSE) {
   if (group.by %in% covariates) {
     coefs <- vector(mode = "list", length = n_samples)
+    pvalues <- vector(mode = "list", length = n_samples)
   }
   node_diffs <- data.frame(nodeID = numeric(0),
                            est = numeric(0),
@@ -206,7 +207,8 @@ sampling_test <- function(df_tract,
                            formula = formula,
                            k = k,
                            family = family)
-
+    ff <- summary(gam_shuffle)
+    pvalues[[idx]] <- ff$p.table[,"Pr(>|t|)"][[paste0(group.by, factor_b)]]
     if (group.by %in% covariates) {
       coef_name <- grep(paste0("^", group.by),
                         names(gam_shuffle$coefficients),
@@ -242,6 +244,6 @@ sampling_test <- function(df_tract,
     df_sampling_test$group_coefs <- unlist(coefs)
   }
 
+  df_sampling_test$pvalue <- unlist(pvalues)
   return(df_sampling_test)
 }
-
