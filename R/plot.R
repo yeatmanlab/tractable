@@ -102,7 +102,7 @@ plot_gam_splines <- function(
   # convert predictions to dataframe
   df_pred <- data.frame(
     nodeID = df_tract$nodeID,
-    fit    = df_pred$fit,
+    fit = df_pred$fit,
     se.fit = df_pred$se.fit
   )
 
