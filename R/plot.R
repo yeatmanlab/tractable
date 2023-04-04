@@ -1,9 +1,11 @@
 # Use colorblind-friendly palette from http://jfly.iam.u-tokyo.ac.jp/color/
 # The palette with grey:
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+               "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 # The palette with black:
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
+                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 #' Retrieve tract name from abbreviation
 #'
@@ -76,7 +78,16 @@ tract_name <- function(tract) {
 #'                  covariates = c("group", "sex"),
 #'                  out_dir = ".")
 #' }
-plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates, group.by = "group", participant.id = "subjectID", out_dir) {
+plot_gam_splines <- function(
+    gam_model, 
+    tract, 
+    df_tract, 
+    dwi_metric, 
+    covariates, 
+    group.by       = "group", 
+    participant.id = "subjectID", 
+    out_dir
+) {
   # generate predictions
   values <- vector(mode = "list", length = length(covariates))
   names(values) <- covariates
@@ -91,7 +102,7 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
   # convert predictions to dataframe
   df_pred <- data.frame(
     nodeID = df_tract$nodeID,
-    fit = df_pred$fit,
+    fit    = df_pred$fit,
     se.fit = df_pred$se.fit
   )
 
@@ -121,16 +132,15 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     ggplot2::theme(text = ggplot2::element_text(
       family = "Times New Roman", face = "bold", size = 14
     ))
-  options(warn=0)
+  options(warn = 0)
 
   # Use colorblind palette for fills and lines
   p + ggplot2::scale_color_manual(
     values = cbbPalette,
   )
 
-  plot_filename <- file.path(out_dir, paste0("plot_gam_",
-                                             sub(" ", "_", tract),
-                                             ".png"))
+  plot_filename <- file.path(out_dir, 
+    paste0("plot_gam_", sub(" ", "_", tract), ".png"))
 
   ggplot2::ggsave(
     plot_filename,
