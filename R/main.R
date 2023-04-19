@@ -171,7 +171,7 @@ tractr_single_bundle <- function(df_afq = NULL,
     df_afq[[group.by]] <- factor(df_afq[[group.by]])
   }
 
-  df_afq[[participant.id]] <- unclass(factor(df_afq[[participant.id]]))
+  df_afq[[participant.id]] <- factor(df_afq[[participant.id]])
 
   cols <- unique(c(participant.id,
                    "nodeID",
