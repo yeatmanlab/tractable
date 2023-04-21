@@ -24,7 +24,7 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group.by = "g
   if (!is.null(covariates)) {
     vars <- paste0(covariates, collapse = "+")
   }
-  if (is.null(group.by)) {
+  if (!is.null(group.by)) {
     node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
   } else {
     node_smooth <- paste0("s(nodeID, k=", k, ")")
@@ -126,7 +126,7 @@ fit_gam <- function(df_tract,
   if (is.null(formula)) {
     if (k == "auto") {
       # Initial k value. This will be multiplied by 2 in the while loop
-      k.model <- 8
+      k.model <- 4
 
       # Initialize k check results to enter the while loop
       k.indices <- list(0.0, 0.0)
@@ -195,13 +195,20 @@ fit_gam <- function(df_tract,
         "k_check_gam_", family, "_", sub(" ", "_", tract_name), ".txt"
       ))
     )
-
+    gam_summary <- summary(gam_fit)
     utils::capture.output(
-      summary(gam_fit),
+      gam_summary,
       file = file.path(out_dir, paste0(
         "fit_summary_gam_", family, "_", sub(" ", "_", tract_name), ".txt"
       ))
     )
+
+    utils::write.csv(
+      t(gam_summary$p.table[, "Pr(>|t|)"]),
+      file.path(out_dir, paste0(
+        "gam_pvals_", family, "_", sub(" ", "_", tract_name), ".csv"
+        )))
+
   }
 
   return(gam_fit)

@@ -30,13 +30,16 @@
 #'
 #' @examples
 #' \dontrun{
-#' df_afq = read.csv("/path/to/afq/output.csv")
-#' tractr.bwas(df_afq = df_afq,
-#'             tract = "CST_R",
-#'             dwi_metric = "dti_fa",
-#'             covariates = c("sex", "group"),
-#'             comp_list = c("0", "1"),
-#'             out_dir = "tractr_results",
+#' sarica <- read.afq.sarica()
+#' sarica$group <- factor(sarica$class)
+#' sarica$subjectID <- unclass(factor(sarica$subjectID))
+#' tractr_bwas(df_afq = sarica,
+#'             out_dir = out_dir,
+#'             dwi_metric= "fa",
+#'             participant.id = "subjectID",
+#'             group.by = "group",
+#'             covariates = c("age","group"),
+#'             comp_list = c("ALS", "CTRL"),
 #'             resampling_technique = "bootstrap",
 #'             n_samples = 100)
 #' }
@@ -122,13 +125,17 @@ tractr_bwas <- function(df_afq = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' df_afq = read.csv("/path/to/afq/output.csv")
-#' tractr_single_bundle(df_afq = df_afq,
-#'                      tract = "CST_R",
-#'                      dwi_metric = "dti_fa",
-#'                      covariates = c("sex", "group"),
-#'                      comp_list = c("0", "1"),
+#' sarica <- read.afq.sarica()
+#' sarica$group <- factor(sarica$class)
+#' sarica$subjectID <- unclass(factor(sarica$subjectID))
+#' tractr_single_bundle(df_afq = sarica,
 #'                      out_dir = ".",
+#'                      tract = "Right Corticospinal",
+#'                      participant.id = "subjectID",
+#'                      group.by = "group",
+#'                      covariates = c("age","group"),
+#'                      dwi_metric = "fa",
+#'                      comp_list = c("ALS", "CTRL"),
 #'                      resampling_technique = "bootstrap",
 #'                      n_samples = 100)
 #' }
@@ -164,7 +171,7 @@ tractr_single_bundle <- function(df_afq = NULL,
     df_afq[[group.by]] <- factor(df_afq[[group.by]])
   }
 
-  df_afq[[participant.id]] <- unclass(factor(df_afq[[participant.id]]))
+  df_afq[[participant.id]] <- factor(df_afq[[participant.id]])
 
   cols <- unique(c(participant.id,
                    "nodeID",

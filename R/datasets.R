@@ -74,7 +74,7 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
 
   # Determine separator from file suffix
   if (grepl("\\.tsv$", pheno_csv)) {
-    sep <- ""
+    sep <- "\t"
   } else {
     sep <- ","
   }
@@ -95,9 +95,6 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
                          sep = sep,
                          ... = ...)
   }
-
-  # Delete an empty index column if
-  pheno_df <- dplyr::select(pheno_df, -dplyr::any_of(""))
 
   # Select only the user supplied pheno columns
   if (!is.null(pheno_cols)) {
