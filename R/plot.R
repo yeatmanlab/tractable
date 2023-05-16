@@ -297,11 +297,14 @@ spline_diff <- function(gam_model,
 #' @param linewidth Line thickness of the tract profile line.
 #' @param ribbon_func Ribbon function that provides the range for the ribbon.
 #'          See \link[ggplot2]{stat_summary} for more information.
+#' @param ribbon_alpha Ribbon alpha level.
 #' @param n_groups Number of groups to split a numeric grouping variable.
 #' @param pal_name Grouping color palette name, character. Default is colorblind.
 #' @param out_dir Output directory of saved plots. 
 #' @param figsize Figure size. A numeric vector of (width, height) in inches.
 #'
+#' @return List of plot handles corresponding to the specified metrics.
+#' 
 #' @export
 #' 
 #' @examples
@@ -312,7 +315,8 @@ spline_diff <- function(gam_model,
 #'   df,
 #'   metrics = c("fa"), 
 #'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
-#'   group_col = "class"
+#'   group_col = "class",
+#'   figsize   = c(8, 6)
 #')   
 #'
 #'plot_tract_profiles(
@@ -321,7 +325,8 @@ spline_diff <- function(gam_model,
 #'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
 #'   group_col = "age", 
 #'   n_groups  = 3, 
-#'   pal_name  = "Spectral"
+#'   pal_name  = "Spectral",
+#'   figsize   = c(8, 6)
 #')  
 #'}
 plot_tract_profiles <- function (
@@ -356,6 +361,14 @@ plot_tract_profiles <- function (
     df[[group_col]] <- "placeholder"
   }
   
+  ribbon_func <- switch(
+    ribbon_func, 
+    "mean_cl_boot"   = ggplot2::mean_cl_boot, 
+    "mean_cl_normal" = ggplot2::mean_cl_normal, 
+    "mean_sdl"       = ggplot2::mean_sdl, 
+    "median_hilow"   = ggplot2::median_hilow
+  )
+  
   # prepare data.frame for plotting
   plot_df <- df %>% 
     tidyr::pivot_longer(cols = tidyselect::all_of(metrics), names_to = "metric") %>% 
@@ -384,11 +397,12 @@ plot_tract_profiles <- function (
     # create current metric figure handle
     plot_handle <- plot_df %>% 
       dplyr::filter(metric == curr_metric) %>% 
-      ggplot2::ggplot(aes(x = nodeID, y = value, group = .data[[group_col]],
+      ggplot2::ggplot(ggplot2::aes(x = nodeID, y = value, group = .data[[group_col]],
                           color = .data[[group_col]], fill = .data[[group_col]])) +
-      ggplot2::stat_summary(color = NA, geom = "ribbon",
-                            fun.data = ribbon_func, alpha = ribbon_alpha) +
-      ggplot2::stat_summary(geom = "line", fun = line_func, linewidth = linewidth) +
+      ggplot2::stat_summary(
+        color = NA, geom = "ribbon", fun.data = ribbon_func, alpha = ribbon_alpha) +
+      ggplot2::stat_summary(
+        geom = "line", fun = line_func, linewidth = linewidth) +
       ggplot2::scale_x_continuous(name = "") +
       ggplot2::scale_y_continuous(name = curr_metric) +
       ggplot2::scale_color_manual(values = color_palette) +

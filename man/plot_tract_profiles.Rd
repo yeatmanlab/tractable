@@ -44,6 +44,8 @@ character. By default, no grouping variable is provided.}
 \item{ribbon_func}{Ribbon function that provides the range for the ribbon.
 See \link[ggplot2]{stat_summary} for more information.}
 
+\item{ribbon_alpha}{Ribbon alpha level.}
+
 \item{n_groups}{Number of groups to split a numeric grouping variable.}
 
 \item{pal_name}{Grouping color palette name, character. Default is colorblind.}
@@ -51,6 +53,9 @@ See \link[ggplot2]{stat_summary} for more information.}
 \item{out_dir}{Output directory of saved plots.}
 
 \item{figsize}{Figure size. A numeric vector of (width, height) in inches.}
+}
+\value{
+List of plot handles corresponding to the specified metrics.
 }
 \description{
 Plot tract profiles for each bundle as a facet and each metric as a figure.
@@ -63,7 +68,8 @@ plot_tract_profiles(
   df,
   metrics = c("fa"), 
   bundles = c("Left Corticospinal", "Right Corticospinal"), 
-  group_col = "class"
+  group_col = "class",
+  figsize   = c(8, 6)
 )   
 
 plot_tract_profiles(
@@ -72,7 +78,8 @@ plot_tract_profiles(
   bundles = c("Left Corticospinal", "Right Corticospinal"), 
   group_col = "age", 
   n_groups  = 3, 
-  pal_name  = "Spectral"
+  pal_name  = "Spectral",
+  figsize   = c(8, 6)
 )  
 }
 }
