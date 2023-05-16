@@ -297,7 +297,7 @@ spline_diff <- function(gam_model,
 #' @param linewidth Line thickness of the tract profile line.
 #' @param ribbon_func Ribbon function that provides the range for the ribbon.
 #'          See \link[ggplot2]{stat_summary} for more information.
-#' @param n_groups Number of groups to 
+#' @param n_groups Number of groups to split a numeric grouping variable.
 #' @param pal_name Grouping color palette name, character. Default is colorblind.
 #' @param out_dir Output directory of saved plots. 
 #' @param figsize Figure size. A numeric vector of (width, height) in inches.
@@ -341,7 +341,7 @@ plot_tract_profiles <- function (
   
   # factorized grouping variable, split into groups if numeric
   if (is.numeric(plot_df[[group_col]])) {
-    plot_df[[group_col]] <- Hmisc::cut2(plot_df[[group_col]], g = n_group)
+    plot_df[[group_col]] <- Hmisc::cut2(plot_df[[group_col]], g = n_groups)
   } else {
     plot_df[[group_col]] <- forcats::fct(plot_df[[group_col]])
   }

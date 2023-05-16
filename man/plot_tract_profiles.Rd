@@ -44,7 +44,7 @@ character. By default, no grouping variable is provided.}
 \item{ribbon_func}{Ribbon function that provides the range for the ribbon.
 See \link[ggplot2]{stat_summary} for more information.}
 
-\item{n_groups}{Number of groups to}
+\item{n_groups}{Number of groups to split a numeric grouping variable.}
 
 \item{pal_name}{Grouping color palette name, character. Default is colorblind.}
 
