@@ -307,20 +307,21 @@ spline_diff <- function(gam_model,
 #' @examples
 #' \dontrun{
 #' df <- read.afq.sarica()
-#' plot_tract_profiles(
+#' 
+#'plot_tract_profiles(
 #'   df,
-#'   metrics = c("dki_fa"), 
-#'   bundles = c("CST_L", "CST_R"), 
-#'   group_col = "group"
-#')  
+#'   metrics = c("fa"), 
+#'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
+#'   group_col = "class"
+#')   
 #'
-#' plot_tract_profiles(
+#'plot_tract_profiles(
 #'   df,
-#'   metrics = c("dki_fa"), 
-#'   bundles = c("CST_L", "CST_R"), 
+#'   metrics = c("fa"), 
+#'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
 #'   group_col = "age", 
 #'   n_groups  = 3, 
-#'   pal_col   = "Spectral"
+#'   pal_name  = "Spectral"
 #')  
 #'}
 plot_tract_profiles <- function (
@@ -357,14 +358,14 @@ plot_tract_profiles <- function (
   
   # prepare data.frame for plotting
   plot_df <- df %>% 
-    tidyr::pivot_longer(cols = all_of(metrics), names_to = "metric") %>% 
-    dplyr::rename(tracts = all_of(bundles_col)) %>% 
+    tidyr::pivot_longer(cols = tidyselect::all_of(metrics), names_to = "metric") %>% 
+    dplyr::rename(tracts = tidyselect::all_of(bundles_col)) %>% 
     dplyr::filter(tracts %in% bundles, metric %in% metrics) 
   
   # factorized grouping variable, split into groups if numeric
   if (is.numeric(plot_df[[group_col]])) {
     plot_df[[group_col]] <- Hmisc::cut2(plot_df[[group_col]], g = n_groups)
-  } else {
+  } else if (is.character(plot_df[[group_col]])) {
     plot_df[[group_col]] <- forcats::fct(plot_df[[group_col]])
   }
 
