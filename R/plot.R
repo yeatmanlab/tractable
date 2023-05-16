@@ -301,6 +301,28 @@ spline_diff <- function(gam_model,
 #' @param pal_name Grouping color palette name, character. Default is colorblind.
 #' @param out_dir Output directory of saved plots. 
 #' @param figsize Figure size. A numeric vector of (width, height) in inches.
+#'
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' df <- read.afq.sarica()
+#' plot_tract_profiles(
+#'   df,
+#'   metrics = c("dki_fa"), 
+#'   bundles = c("CST_L", "CST_R"), 
+#'   group_col = "group"
+#')  
+#'
+#' plot_tract_profiles(
+#'   df,
+#'   metrics = c("dki_fa"), 
+#'   bundles = c("CST_L", "CST_R"), 
+#'   group_col = "age", 
+#'   n_groups  = 3, 
+#'   pal_col   = "Spectral"
+#')  
+#'}
 plot_tract_profiles <- function (
     df, 
     metrics      = NULL, 
@@ -352,8 +374,8 @@ plot_tract_profiles <- function (
   } else if (pal_name == "colorblindblack") {
     color_palette = cbbPalette
   } else {
-    n <- RColorBrewer::brewer.pal.info[palette, "maxcolors"]
-    color_palette <- RColorBrewer::brewer.pal(n, palette)
+    n <- RColorBrewer::brewer.pal.info[pal_name, "maxcolors"]
+    color_palette <- RColorBrewer::brewer.pal(n, pal_name)
   }
   
   plot_handles <- list() # initialize
@@ -380,7 +402,7 @@ plot_tract_profiles <- function (
     
     # save tract profile figure
     plot_fname <- paste0("tract-profile_by-", group_col, "_", 
-                         str_replace_all(curr_metric, "_", "-"), ".png")
+                         stringr::str_replace_all(curr_metric, "_", "-"), ".png")
     ggplot2::ggsave(
       filename = file.path(out_dir, plot_fname),
       plot     = plot_handle,

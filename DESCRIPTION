@@ -19,16 +19,13 @@ Imports:
     fitdistrplus,
     forcats,
     ggplot2,
-    ggpubr,
     Hmisc, 
     itsadug,
+    magrittr,
     mgcv,
-    mgcViz,
     progress,
     RColorBrewer,
-    rstatix,
     stringr,
-    tidymv,
     tidyr
 Suggests: 
     covr,

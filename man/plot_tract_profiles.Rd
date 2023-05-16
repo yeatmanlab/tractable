@@ -55,3 +55,23 @@ See \link[ggplot2]{stat_summary} for more information.}
 \description{
 Plot tract profiles for each bundle as a facet and each metric as a figure.
 }
+\examples{
+\dontrun{
+df <- read.afq.sarica()
+plot_tract_profiles(
+  df,
+  metrics = c("dki_fa"), 
+  bundles = c("CST_L", "CST_R"), 
+  group_col = "group"
+)  
+
+plot_tract_profiles(
+  df,
+  metrics = c("dki_fa"), 
+  bundles = c("CST_L", "CST_R"), 
+  group_col = "age", 
+  n_groups  = 3, 
+  pal_col   = "Spectral"
+)  
+}
+}
