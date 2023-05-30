@@ -64,13 +64,16 @@ Analyze group differences in a single dMRI tract profile using GAMs
 }
 \examples{
 \dontrun{
-df_afq = read.csv("/path/to/afq/output.csv")
-tractr.bwas(df_afq = df_afq,
-            tract = "CST_R",
-            dwi_metric = "dti_fa",
-            covariates = c("sex", "group"),
-            comp_list = c("0", "1"),
-            out_dir = "tractr_results",
+sarica <- read.afq.sarica()
+sarica$group <- factor(sarica$class)
+sarica$subjectID <- unclass(factor(sarica$subjectID))
+tractr_bwas(df_afq = sarica,
+            out_dir = out_dir,
+            dwi_metric= "fa",
+            participant.id = "subjectID",
+            group.by = "group",
+            covariates = c("age","group"),
+            comp_list = c("ALS", "CTRL"),
             resampling_technique = "bootstrap",
             n_samples = 100)
 }

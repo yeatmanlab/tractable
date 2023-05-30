@@ -1,9 +1,11 @@
 # Use colorblind-friendly palette from http://jfly.iam.u-tokyo.ac.jp/color/
 # The palette with grey:
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+               "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 # The palette with black:
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", 
+                "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 #' Retrieve tract name from abbreviation
 #'
@@ -41,7 +43,7 @@ tract_name <- function(tract) {
     "SLF_L" = "LeftSLF",
     tract
   )
-
+  
   return(name)
 }
 
@@ -76,7 +78,16 @@ tract_name <- function(tract) {
 #'                  covariates = c("group", "sex"),
 #'                  out_dir = ".")
 #' }
-plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates, group.by = "group", participant.id = "subjectID", out_dir) {
+plot_gam_splines <- function(
+    gam_model, 
+    tract, 
+    df_tract, 
+    dwi_metric, 
+    covariates, 
+    group.by       = "group", 
+    participant.id = "subjectID", 
+    out_dir
+) {
   # generate predictions
   values <- vector(mode = "list", length = length(covariates))
   names(values) <- covariates
@@ -87,30 +98,30 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     se.fit = T,
     type = "response"
   )
-
+  
   # convert predictions to dataframe
   df_pred <- data.frame(
     nodeID = df_tract$nodeID,
     fit = df_pred$fit,
     se.fit = df_pred$se.fit
   )
-
+  
   for (covar in covariates) {
     df_pred[[covar]] <- df_tract[[covar]]
   }
-
+  
   if (!is.null(group.by)) {
     df_pred[[group.by]] <- df_tract[[group.by]]
   }
-
+  
   df_pred[[participant.id]] <- df_tract[[participant.id]]
-
+  
   # set up for plot
   h_tract <- tract_name(tract)
   h_title <- paste0("GAM fit of ", h_tract, " ", dwi_metric, " values")
-
+  
   # draw plot
-  options(warn=-1)
+  options(warn = -1)
   p <- ggplot2::ggplot(data = df_pred) +
     ggplot2::geom_smooth(mapping = ggplot2::aes_string(
       x = "nodeID", y = "fit", color = group.by
@@ -121,17 +132,16 @@ plot_gam_splines <- function(gam_model, tract, df_tract, dwi_metric, covariates,
     ggplot2::theme(text = ggplot2::element_text(
       family = "Times New Roman", face = "bold", size = 14
     ))
-  options(warn=0)
-
+  options(warn = 0)
+  
   # Use colorblind palette for fills and lines
   p + ggplot2::scale_color_manual(
     values = cbbPalette,
   )
-
-  plot_filename <- file.path(out_dir, paste0("plot_gam_",
-                                             sub(" ", "_", tract),
-                                             ".png"))
-
+  
+  plot_filename <- file.path(out_dir, 
+                             paste0("plot_gam_", sub(" ", "_", tract), ".png"))
+  
   ggplot2::ggsave(
     plot_filename,
     units = "in",
@@ -269,3 +279,159 @@ spline_diff <- function(gam_model,
   return(df_pair)
 }
 
+
+#' Plot tract profiles for each bundle as a facet and each metric as a figure.
+#'
+#' @param df Data frame.
+#' @param metrics Name(s) of the metrics to plot per figure, character vector. 
+#'          By default, will be all diffusion metrics in the provided data frame.
+#' @param bundles Name(s) of the tract bundles to plot per facet, character 
+#'          vector. By default, will be all tract bundles in the provided data 
+#'          frame.
+#' @param bundles_col Name of the column in the provided data frame with the 
+#'          tract bundles.
+#' @param group_col Name of the column in the data frame to group by as a color, 
+#'          character. By default, no grouping variable is provided.
+#' @param line_func Line function that provides the line positioning. See 
+#'          \link[ggplot2]{stat_summary} for more information.
+#' @param linewidth Line thickness of the tract profile line.
+#' @param ribbon_func Ribbon function that provides the range for the ribbon.
+#'          See \link[ggplot2]{stat_summary} for more information.
+#' @param ribbon_alpha Ribbon alpha level.
+#' @param n_groups Number of groups to split a numeric grouping variable.
+#' @param pal_name Grouping color palette name, character. Default is colorblind.
+#' @param out_dir Output directory of saved plots. 
+#' @param figsize Figure size. A numeric vector of (width, height) in inches.
+#'
+#' @return List of plot handles corresponding to the specified metrics.
+#' 
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' df <- read.afq.sarica()
+#' 
+#'plot_tract_profiles(
+#'   df,
+#'   metrics = c("fa"), 
+#'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
+#'   group_col = "class",
+#'   figsize   = c(8, 6)
+#')   
+#'
+#'plot_tract_profiles(
+#'   df,
+#'   metrics = c("fa"), 
+#'   bundles = c("Left Corticospinal", "Right Corticospinal"), 
+#'   group_col = "age", 
+#'   n_groups  = 3, 
+#'   pal_name  = "Spectral",
+#'   figsize   = c(8, 6)
+#')  
+#'}
+plot_tract_profiles <- function (
+    df, 
+    metrics      = NULL, 
+    bundles      = NULL, 
+    bundles_col  = "tractID", 
+    group_col    = NULL,
+    line_func    = "mean",
+    linewidth    = 1,
+    ribbon_func  = "mean_cl_boot",
+    ribbon_alpha = 0.25,
+    n_groups     = 3, 
+    pal_name     = "colorblind", 
+    out_dir      = getwd(), 
+    figsize      = c(8, 11.5)
+) {
+  
+  # argument preparation
+  if (is.null(metrics)) {
+    metrics <- names(df) # extract all column names from given data frame
+    indx <- sapply(metrics, function(x) any(startsWith(x, c("csd", "dki", "dti", "fwdti"))))
+    metrics <- metrics[indx]
+  }
+  
+  if (is.null(bundles)) {
+    bundles <- unique(df[[bundles_col]]) 
+  }
+  
+  if (is.null(group_col)) {
+    group_col <- "_group" 
+    df[[group_col]] <- "placeholder"
+  }
+  
+  ribbon_func <- switch(
+    ribbon_func, 
+    "mean_cl_boot"   = ggplot2::mean_cl_boot, 
+    "mean_cl_normal" = ggplot2::mean_cl_normal, 
+    "mean_sdl"       = ggplot2::mean_sdl, 
+    "median_hilow"   = ggplot2::median_hilow
+  )
+  
+  # prepare data.frame for plotting
+  plot_df <- df %>% 
+    tidyr::pivot_longer(cols = tidyselect::all_of(metrics), names_to = "metric") %>% 
+    dplyr::rename(tracts = tidyselect::all_of(bundles_col)) %>% 
+    dplyr::filter(tracts %in% bundles, metric %in% metrics) 
+  
+  # factorized grouping variable, split into groups if numeric
+  if (is.numeric(plot_df[[group_col]])) {
+    plot_df[[group_col]] <- Hmisc::cut2(plot_df[[group_col]], g = n_groups)
+  } else if (is.character(plot_df[[group_col]])) {
+    plot_df[[group_col]] <- forcats::fct(plot_df[[group_col]])
+  }
+
+  # declare color palette for plotting
+  if (pal_name == "colorblind") {
+    color_palette <- cbPalette
+  } else if (pal_name == "colorblindblack") {
+    color_palette = cbbPalette
+  } else {
+    n <- RColorBrewer::brewer.pal.info[pal_name, "maxcolors"]
+    color_palette <- RColorBrewer::brewer.pal(n, pal_name)
+  }
+  
+  plot_handles <- list() # initialize
+  for (curr_metric in metrics) {
+    # create current metric figure handle
+    plot_handle <- plot_df %>% 
+      dplyr::filter(metric == curr_metric) %>% 
+      ggplot2::ggplot(ggplot2::aes(x = nodeID, y = value, group = .data[[group_col]],
+                          color = .data[[group_col]], fill = .data[[group_col]])) +
+      ggplot2::stat_summary(
+        color = NA, geom = "ribbon", fun.data = ribbon_func, alpha = ribbon_alpha) +
+      ggplot2::stat_summary(
+        geom = "line", fun = line_func, linewidth = linewidth) +
+      ggplot2::scale_x_continuous(name = "") +
+      ggplot2::scale_y_continuous(name = curr_metric) +
+      ggplot2::scale_color_manual(values = color_palette) +
+      ggplot2::scale_fill_manual(values = color_palette) +
+      ggplot2::facet_wrap(~ tracts) +
+      ggplot2::theme_bw()
+    
+    # remove legend if no group
+    if (group_col == "_group") {
+      plot_handle <- plot_handle + theme(legend.position = "none")
+    }
+    
+    # save tract profile figure
+    plot_fname <- paste0("tract-profile_by-", group_col, "_", 
+                         stringr::str_replace_all(curr_metric, "_", "-"), ".png")
+    ggplot2::ggsave(
+      filename = file.path(out_dir, plot_fname),
+      plot     = plot_handle,
+      width    = figsize[1],
+      height   = figsize[2],
+      units    = "in",
+      device   = "png"
+    )  
+    
+    # collect plot handles by metric
+    plot_handles <- c(plot_handles, list(plot_handle))
+  }
+  
+  # assign names to plot handles and return list
+  names(plot_handles) <- metrics
+  return(plot_handles)
+}
