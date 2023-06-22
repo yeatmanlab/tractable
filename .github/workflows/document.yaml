@@ -24,9 +24,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: roxygen2
+          extra-packages: any::roxygen2
 
-      - name: Document
+      - name: document
         run: roxygen2::roxygenise()
         shell: Rscript {0}
 
