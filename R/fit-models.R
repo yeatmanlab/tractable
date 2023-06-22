@@ -77,6 +77,8 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #' @param tract_name Name of the tract, used only for output file names
 #' @param out_dir Directory in which to save gam stats
 #' @param save_output Boolean flag to save gam stat files
+#' @param method String, fitting method passed to mgcv::bam
+#' @param ... Further keyword arguments passed to mgcv::bam
 #'
 #' @return Fitted GAM model
 #' @export
@@ -103,7 +105,9 @@ fit_gam <- function(df_tract,
                     family = "auto",
                     tract_name = "",
                     out_dir = ".",
-                    save_output = FALSE) {
+                    save_output = FALSE,
+                    method="fREML",
+                    ...) {
   # Set link family
   if (is.character(family) | is.null(family)) {
     if (is.null(family) | tolower(family) == "auto") {
@@ -146,7 +150,8 @@ fit_gam <- function(df_tract,
           formula,
           data = df_tract,
           family = linkfamily,
-          method = "REML"
+          method = method,
+          ... = ...
         )
 
         k.check <- mgcv::k.check(gam_fit)
@@ -166,10 +171,11 @@ fit_gam <- function(df_tract,
 
   # Fit the gam
   gam_fit <- mgcv::bam(
-    formula,
-    data = df_tract,
-    family = linkfamily,
-    method = "REML"
+          formula,
+          data = df_tract,
+          family = linkfamily,
+          method = method,
+          ... = ...
   )
 
   if (save_output) {

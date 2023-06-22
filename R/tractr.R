@@ -119,7 +119,7 @@ tractr_bwas <- function(df_afq = NULL,
 #'   Gavin Simpson's code, here the Bayesian posterior covariance matrix of
 #'   the parameters is uncertainty corrected (unconditional=TRUE) to reflect
 #'   the uncertainty on the estimation of smoothness parameters.
-#' @param ... Arguments to pass to read.afq.files
+#' @param ... Arguments to pass to fit_gam
 #'
 #' @export
 #'
@@ -139,7 +139,7 @@ tractr_bwas <- function(df_afq = NULL,
 #'                      resampling_technique = "bootstrap",
 #'                      n_samples = 100)
 #' }
-tractr_single_bundle <- function(df_afq = NULL,
+tractr_single_bundle <- function(df_afq,
                                  tract,
                                  dwi_metric,
                                  out_dir,
@@ -164,14 +164,12 @@ tractr_single_bundle <- function(df_afq = NULL,
   dir.create(stats_dir, showWarnings = FALSE, recursive = TRUE)
 
   selected <- select_bundle(
-    df_afq=df_afq,
-    tract=tract,
-    dwi_metric=dwi_metric,
-    covariates=covariates,
+    df_afq = df_afq,
+    tract = tract,
+    dwi_metric = dwi_metric,
+    covariates = covariates,
     participant_id = "subjectID",
-    group_by = "group",
-    ... = ...)
-
+    group_by = "group")
 
   df_tract <- selected$df_tract
   tract_names <- selected$tract_names
@@ -186,7 +184,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                      family = family,
                      tract_name = tract,
                      out_dir = stats_dir,
-                     save_output = TRUE)
+                     save_output = TRUE,
+                     ... = ...)
 
   for (this_tract in tract_names) {
     this_df <- df_tract[which(df_tract$tractID == this_tract), ]
