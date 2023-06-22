@@ -11,6 +11,4 @@ test_that("gams run as expected", {
                       group.by = "group",
                       covariates = c("age","group"),
                       dwi_metric = "fa",
-                      comp_list = c("ALS", "CTRL"),
-                      resampling_technique = "bootstrap",
-                      n_samples = 100)})
+                      comp_list = c("ALS", "CTRL"))})
