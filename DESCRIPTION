@@ -54,6 +54,9 @@ Imports:
     stringr,
     tidyr,
     tidyselect
+Suggests:
+    covr,
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/richford/tractr
 BugReports: https://github.com/richford/tractr/issues
