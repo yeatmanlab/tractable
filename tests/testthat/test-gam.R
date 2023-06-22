@@ -7,8 +7,8 @@ test_that("gams run as expected", {
  tractr_single_bundle(df_afq = sarica,
                       out_dir = ".",
                       tract = "Right Corticospinal",
-                      participant.id = "subjectID",
-                      group.by = "group",
+                      participant_id = "subjectID",
+                      group_by = "group",
                       covariates = c("age","group"),
                       dwi_metric = "fa",
                       comp_list = c("ALS", "CTRL"))})

@@ -8,8 +8,8 @@ build_formula(
   target,
   covariates,
   smooth_terms = NULL,
-  group.by = "group",
-  participant.id = "subjectID",
+  group_by = "group",
+  participant_id = "subjectID",
   k
 )
 }
@@ -23,9 +23,9 @@ This list can also include smoothing terms.}
 \item{smooth_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term}
 }

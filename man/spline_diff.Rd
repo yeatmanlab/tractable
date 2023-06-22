@@ -7,7 +7,7 @@
 spline_diff(
   gam_model,
   tract,
-  group.by = "group",
+  group_by = "group",
   factor_a,
   factor_b,
   save_output = TRUE,
@@ -20,7 +20,7 @@ spline_diff(
 
 \item{tract}{AFQ tract name}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
 \item{factor_a}{First group factor, string}
 

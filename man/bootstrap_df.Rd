@@ -7,8 +7,8 @@
 bootstrap_df(
   input_df,
   dwi_metric,
-  group.by = "group",
-  participant.id = "subjectID"
+  group_by = "group",
+  participant_id = "subjectID"
 )
 }
 \arguments{
@@ -16,9 +16,9 @@ bootstrap_df(
 
 \item{dwi_metric}{The diffusion MRI metric (e.g. "FA", "MD")}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 }
 \value{
 A shuffled AFQ dataframe

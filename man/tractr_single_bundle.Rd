@@ -9,11 +9,11 @@ tractr_single_bundle(
   tract,
   dwi_metric,
   out_dir,
-  participant.id = "subjectID",
-  group.by = "group",
-  covariates = c(group.by),
+  participant_id = "subjectID",
+  group_by = "group",
+  covariates = c(group_by),
   smooth_terms = NULL,
-  comp_list = unique(df_afq[[group.by]]),
+  comp_list = unique(df_afq[[group_by]]),
   resampling_technique = NULL,
   n_samples = 100,
   k = "auto",
@@ -32,9 +32,9 @@ using read.afq.data and the additional arguments in ...}
 
 \item{out_dir}{Directory in which to save text output and plots}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
 \item{covariates}{List of strings of GAM covariates,
 not including the smoothing terms over nodes and the random effect due
@@ -84,8 +84,8 @@ sarica$subjectID <- unclass(factor(sarica$subjectID))
 tractr_single_bundle(df_afq = sarica,
                      out_dir = ".",
                      tract = "Right Corticospinal",
-                     participant.id = "subjectID",
-                     group.by = "group",
+                     participant_id = "subjectID",
+                     group_by = "group",
                      covariates = c("age","group"),
                      dwi_metric = "fa",
                      comp_list = c("ALS", "CTRL"),

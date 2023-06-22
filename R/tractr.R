@@ -3,8 +3,8 @@
 #' @param df_afq Input AFQ dataframe. If NULL, this function will load data
 #'     using read.afq.data and the additional arguments in ...
 #' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
-#' @param participant.id The name of the column that encodes participant ID
-#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant_id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
 #' @param covariates List of strings of GAM covariates,
 #'     not including the smoothing terms over nodes and the random effect due
 #'     to subjectID.
@@ -36,8 +36,8 @@
 #' tractr_bwas(df_afq = sarica,
 #'             out_dir = out_dir,
 #'             dwi_metric= "fa",
-#'             participant.id = "subjectID",
-#'             group.by = "group",
+#'             participant_id = "subjectID",
+#'             group_by = "group",
 #'             covariates = c("age","group"),
 #'             comp_list = c("ALS", "CTRL"),
 #'             resampling_technique = "bootstrap",
@@ -46,18 +46,18 @@
 tractr_bwas <- function(df_afq = NULL,
                         dwi_metric,
                         out_dir,
-                        participant.id = "subjectID",
-                        group.by = "group",
-                        covariates = c(group.by),
+                        participant_id = "subjectID",
+                        group_by = "group",
+                        covariates = c(group_by),
                         smooth_terms = NULL,
-                        comp_list = unique(df_afq[[group.by]]),
+                        comp_list = unique(df_afq[[group_by]]),
                         resampling_technique = NULL,
                         n_samples = 100,
                         k = "auto",
                         family = "auto",
                         ...) {
   if (is.null(df_afq)) {
-    df_afq <- read.afq.files(..., index = participant.id, dwi_metrics = c(dwi_metric))
+    df_afq <- read.afq.files(..., index = participant_id, dwi_metrics = c(dwi_metric))
   }
 
   tracts <- unique(df_afq$tractID)
@@ -70,8 +70,8 @@ tractr_bwas <- function(df_afq = NULL,
                          tract = tract,
                          dwi_metric = dwi_metric,
                          out_dir = out_dir,
-                         participant.id = participant.id,
-                         group.by = group.by,
+                         participant_id = participant_id,
+                         group_by = group_by,
                          covariates = covariates,
                          smooth_terms = smooth_terms,
                          comp_list = comp_list,
@@ -89,8 +89,8 @@ tractr_bwas <- function(df_afq = NULL,
 #'     using read.afq.data and the additional arguments in ...
 #' @param tract Abbreviated tract name, e.g., "CST_L" or "OR"
 #' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
-#' @param participant.id The name of the column that encodes participant ID
-#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant_id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
 #' @param covariates List of strings of GAM covariates,
 #'     not including the smoothing terms over nodes and the random effect due
 #'     to subjectID.
@@ -131,8 +131,8 @@ tractr_bwas <- function(df_afq = NULL,
 #' tractr_single_bundle(df_afq = sarica,
 #'                      out_dir = ".",
 #'                      tract = "Right Corticospinal",
-#'                      participant.id = "subjectID",
-#'                      group.by = "group",
+#'                      participant_id = "subjectID",
+#'                      group_by = "group",
 #'                      covariates = c("age","group"),
 #'                      dwi_metric = "fa",
 #'                      comp_list = c("ALS", "CTRL"),
@@ -143,11 +143,11 @@ tractr_single_bundle <- function(df_afq = NULL,
                                  tract,
                                  dwi_metric,
                                  out_dir,
-                                 participant.id = "subjectID",
-                                 group.by = "group",
-                                 covariates = c(group.by),
+                                 participant_id = "subjectID",
+                                 group_by = "group",
+                                 covariates = c(group_by),
                                  smooth_terms = NULL,
-                                 comp_list = unique(df_afq[[group.by]]),
+                                 comp_list = unique(df_afq[[group_by]]),
                                  resampling_technique = NULL,
                                  n_samples = 100,
                                  k = "auto",
@@ -167,9 +167,9 @@ tractr_single_bundle <- function(df_afq = NULL,
     df_afq,
     tract,
     dwi_metric,
-    participant.id,
+    participant_id,
     covariates,
-    group.by)
+    group_by)
 
   df_tract <- selected$df_tract
   tract_names <- selected$tract_names
@@ -178,8 +178,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                      target = dwi_metric,
                      covariates = covariates,
                      smooth_terms = smooth_terms,
-                     group.by = group.by,
-                     participant.id = participant.id,
+                     group_by = group_by,
+                     participant_id = participant_id,
                      k = k,
                      family = family,
                      tract_name = tract,
@@ -191,7 +191,7 @@ tractr_single_bundle <- function(df_afq = NULL,
 
     if (tract == "all") {
       this_comp_list <- grep(paste0("^", this_tract),
-                             unique(df_tract[[group.by]]),
+                             unique(df_tract[[group_by]]),
                              value = TRUE)
     } else {
       this_comp_list <- comp_list
@@ -204,8 +204,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                                      n_samples = n_samples,
                                      dwi_metric = dwi_metric,
                                      tract = this_tract,
-                                     group.by = group.by,
-                                     participant.id = participant.id,
+                                     group_by = group_by,
+                                     participant_id = participant_id,
                                      covariates = covariates,
                                      sample_uniform = TRUE,
                                      family = gam_fit$family,
@@ -222,8 +222,8 @@ tractr_single_bundle <- function(df_afq = NULL,
                        file.path(stats_dir, filename),
                        row.names = FALSE)
 
-      # if (group.by %in% covariates) {
-      #   coef_name <- grep(paste0("^", group.by),
+      # if (group_by %in% covariates) {
+      #   coef_name <- grep(paste0("^", group_by),
       #                     names(gam_fit$coefficients),
       #                     value = TRUE)
       #   observed_coef = gam_fit$coefficients[[coef_name]]
@@ -240,14 +240,14 @@ tractr_single_bundle <- function(df_afq = NULL,
                      df_tract = this_df,
                      dwi_metric = dwi_metric,
                      covariates = covariates,
-                     group.by = group.by,
-                     participant.id = participant.id,
+                     group_by = group_by,
+                     participant_id = participant_id,
                      out_dir = plot_dir)
 
-    if (!is.null(group.by)) {
+    if (!is.null(group_by)) {
       df_diff <- spline_diff(gam_model = gam_fit,
                              tract = tract,
-                             group.by = group.by,
+                             group_by = group_by,
                              factor_a = this_comp_list[1],
                              factor_b = this_comp_list[2],
                              out_dir = plot_dir,

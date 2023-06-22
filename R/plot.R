@@ -57,8 +57,8 @@ tract_name <- function(tract) {
 #' @param covariates List of strings of GAM covariates,
 #'     not including the smoothing terms over nodes and the random effect due
 #'     to subjectID.
-#' @param participant.id The name of the column that encodes participant ID
-#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant_id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
 #' @param out_dir directory in which to save plots
 #'
 #' @export
@@ -84,8 +84,8 @@ plot_gam_splines <- function(
     df_tract, 
     dwi_metric, 
     covariates, 
-    group.by       = "group", 
-    participant.id = "subjectID", 
+    group_by       = "group", 
+    participant_id = "subjectID", 
     out_dir
 ) {
   # generate predictions
@@ -110,11 +110,11 @@ plot_gam_splines <- function(
     df_pred[[covar]] <- df_tract[[covar]]
   }
   
-  if (!is.null(group.by)) {
-    df_pred[[group.by]] <- df_tract[[group.by]]
+  if (!is.null(group_by)) {
+    df_pred[[group_by]] <- df_tract[[group_by]]
   }
   
-  df_pred[[participant.id]] <- df_tract[[participant.id]]
+  df_pred[[participant_id]] <- df_tract[[participant_id]]
   
   # set up for plot
   h_tract <- tract_name(tract)
@@ -124,7 +124,7 @@ plot_gam_splines <- function(
   options(warn = -1)
   p <- ggplot2::ggplot(data = df_pred) +
     ggplot2::geom_smooth(mapping = ggplot2::aes_string(
-      x = "nodeID", y = "fit", color = group.by
+      x = "nodeID", y = "fit", color = group_by
     )) +
     ggplot2::ggtitle(h_title) +
     ggplot2::ylab(paste0("Fit ", dwi_metric)) +
@@ -159,7 +159,7 @@ plot_gam_splines <- function(
 #'
 #' @param gam_model GAM object, produced by gam/bam
 #' @param tract AFQ tract name
-#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param group_by The grouping variable used to group nodeID smoothing terms
 #' @param factor_a First group factor, string
 #' @param factor_b Second group factor, string
 #' @param save_output Boolean. If TRUE, save plot output
@@ -193,7 +193,7 @@ plot_gam_splines <- function(
 #' }
 spline_diff <- function(gam_model,
                         tract,
-                        group.by = "group",
+                        group_by = "group",
                         factor_a,
                         factor_b,
                         save_output = TRUE,
@@ -201,7 +201,7 @@ spline_diff <- function(gam_model,
                         out_dir) {
   # determine bottom of plot
   comp <- list(c(factor_a, factor_b))
-  names(comp) <- c(group.by)
+  names(comp) <- c(group_by)
 
   df_pair <- itsadug::plot_diff(
     gam_model,
