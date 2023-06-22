@@ -5,6 +5,9 @@ check:
 	R CMD check .
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c2aa996 (Add test directive in makefile and fix up gam test.)
 test:
 	Rscript -e "devtools::test()"
 
