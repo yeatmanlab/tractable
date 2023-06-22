@@ -1,25 +1,51 @@
 Package: tractr
 Title: Generalized Additive Models for analyzing diffusion MRI tract profiles
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "Adam",
+Authors@R:
+    c(person(given = "Adam",
            family = "Richie-Halford",
            email = "richiehalford@gmail.com",
            role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0001-9276-9084"))
+           comment = c(ORCID = "0000-0001-9276-9084")),
+    person(given = "Kelly",
+           family = "Chang",
+           email = "XXX",
+           role = c("aut"),
+           comment = c(ORCID = "XXX")),
+    person(given = "Teresa",
+           family = "Gomez",
+           email = "XXX",
+           role = c("aut"),
+           comment = c(ORCID = "XXX")),
+    person(given = "McKenzie",
+           family = "Hagen",
+           email = "XXX",
+           role = c("aut"),
+           comment = c(ORCID = "XXX")),
+    person(given = "Ariel",
+           family = "Rokem",
+           email = "arokem@gmail.com",
+           role = c("aut"),
+           comment = c(ORCID = "XXX")))
+Author: Adam Richie-Halford [aut, cre],
+    Kelly Chang (aut)
+    Teresa Gomez (aut)
+    McKenzie Hagen (aut)
+    Ariel Rokem (aut)
+Maintainer: Adam Richie-Halford <richiehalford@gmail.com>
 Description: A toolbox for analyzing diffusion MRI tract profiles using
     generalized additive models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports: 
+Imports:
     aws.s3,
     dplyr,
     fitdistrplus,
     forcats,
     ggplot2,
-    Hmisc, 
+    Hmisc,
     itsadug,
     magrittr,
     mgcv,
@@ -28,9 +54,6 @@ Imports:
     stringr,
     tidyr,
     tidyselect
-Suggests: 
-    covr,
-    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/richford/tractr
 BugReports: https://github.com/richford/tractr/issues
