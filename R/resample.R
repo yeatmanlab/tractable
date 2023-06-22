@@ -255,6 +255,7 @@ bootstrap <- function(tract_df, resample_num=NULL, subject_id_col="subject", gro
 
 cv_split <- function(df_tract, k=5, group.by = NULL) {
 
+
   df_tract <- df_tract %>% pivot_wider(names_from = c('tractID', 'nodeID'), 
                             values_from = all_of(sel_metrics), 
                             names_sep = '/')
@@ -262,5 +263,4 @@ cv_split <- function(df_tract, k=5, group.by = NULL) {
     group_fold <- group_vfold_cv(profiles_wide, group=group.by, v=k) 
 
     return(group_fold)
-    } 
 
