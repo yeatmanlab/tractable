@@ -1,11 +1,24 @@
+#' Select a single bundle from an AFQ dataframe
+#'
+#' @param df_afq The input AFQ dataframe
+#' @param tract Abbreviated tract name, e.g., "CST_L" or "OR"
+#' @param dwi_metric The diffusion MRI metric (e.g. "FA", "MD")
+#' @param covariates List of strings of GAM covariates, not including
+#'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     This list can also include smoothing terms.
+#' @param participant_id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
+#' @param ... arguments to be passed to read.afq.files 
+#'
+#' @return An AFQ dataframe containing only the selected bundle
+#' @export
 select_bundle <- function(df_afq = NULL,
                           tract,
                           dwi_metric,
-                          participant_id,
                           covariates,
-                          group_by,
+                          participant_id = "subjectID",
+                          group_by = "group",
                           ...) {
-
 
   if (is.null(df_afq)) {
     df_afq <- read.afq.files(
