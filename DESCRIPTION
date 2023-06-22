@@ -24,6 +24,7 @@ Imports:
     magrittr,
     mgcv,
     progress,
+    roxygen2,
     RColorBrewer,
     stringr,
     tidyr,
