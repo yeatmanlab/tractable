@@ -149,26 +149,10 @@ fit_gam <- function(df_tract,
           method = "REML"
         )
 
-        k.output <- utils::capture.output(mgcv::gam.check(gam_fit, rep = 500))
-        empties <- which(k.output == "")
-        table.start <- empties[length(empties)] + 1
-        end.sep <- which(k.output == "---")
-        table.end <- end.sep[length(end.sep)] - 1
-        table.text = k.output[table.start:table.end]
-        # Get rid of the significance codes
-        table.text <- lapply(table.text, function(line) gsub("[*. ]+$", "", line))
-        table.text <- unlist(table.text)
-        k.check <- utils::read.table(text = table.text)
-        k.indices <- as.numeric(k.check[
-          grep(paste0("s(nodeID):", group.by), row.names(k.check), fixed = T), "k.index"
-        ])
-        k.pvals <- as.numeric(
-          unlist(lapply(
-            k.check[
-              grep(paste0("s(nodeID):", group.by), row.names(k.check), fixed = T), "p.value"
-            ], function(item) gsub("^<", "", item)))
-        )
-      }
+        k.check <- mgcv::k.check(gam_fit)
+        k.indices <- na.omit(k.check[, "k-index"])
+        k.pvals <- na.omit(k.check[, "p-value"])
+       }
     } else {
       k.model <- k
     }
