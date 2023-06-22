@@ -5,7 +5,7 @@
 \title{Analyze group differences in a single dMRI tract profile using GAMs}
 \usage{
 tractr_single_bundle(
-  df_afq = NULL,
+  df_afq,
   tract,
   dwi_metric,
   out_dir,
@@ -71,7 +71,7 @@ Gavin Simpson's code, here the Bayesian posterior covariance matrix of
 the parameters is uncertainty corrected (unconditional=TRUE) to reflect
 the uncertainty on the estimation of smoothness parameters.}
 
-\item{...}{Arguments to pass to read.afq.files}
+\item{...}{Arguments to pass to fit_gam}
 }
 \description{
 Analyze group differences in a single dMRI tract profile using GAMs

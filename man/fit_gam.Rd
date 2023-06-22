@@ -16,7 +16,9 @@ fit_gam(
   family = "auto",
   tract_name = "",
   out_dir = ".",
-  save_output = FALSE
+  save_output = FALSE,
+  method = "fREML",
+  ...
 )
 }
 \arguments{
@@ -50,6 +52,10 @@ between beta and gamma distributions.}
 \item{out_dir}{Directory in which to save gam stats}
 
 \item{save_output}{Boolean flag to save gam stat files}
+
+\item{method}{String, fitting method passed to mgcv::bam}
+
+\item{...}{Further keyword arguments passed to mgcv::bam}
 }
 \value{
 Fitted GAM model
