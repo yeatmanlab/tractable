@@ -8,7 +8,7 @@ name: document
 
 jobs:
   document:
-    if: ${{ github.event.status == "success" && startsWith(github.event.head_commit.message, "Merge pull request") }}
+    if: ${{ github.event.status == 'success' && startsWith(github.event.head_commit.message, 'Merge pull request') }}
     name: document
     runs-on: ubuntu-latest
     env:
