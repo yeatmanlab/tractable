@@ -257,7 +257,7 @@ sampling_test <- function(df_tract,
 #' @param subject_id_col column with subject ids
 #' @param grouping_id_col column to group by - if null, groups by subject
 
-bootstrap_resample <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
+bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
   
     if (is.null(grouping_id_col)) { 
         if (is.null(resample_num ))  { 
@@ -268,7 +268,7 @@ bootstrap_resample <- function(tract_df, resample_num=NULL, subject_id_col="subj
      nested_df <- tract_df %>% 
             nest(data = everything(), .by=subject_id_col) %>%
             dplyr::slice_sample(n = resample_num, replace=TRUE) 
-     counter <- sapply(unique(tract_df[[subject_id_col]]), function(x) 0)                        
+     counter <- sapply(unique(as.character(tract_df[[subject_id_col]])), function(x) 0)                        
     }  else { 
         if (is.null(resample_num)) {  
             resample_num <- length(unique(tract_df[[grouping_id_col]])) 
@@ -278,11 +278,12 @@ bootstrap_resample <- function(tract_df, resample_num=NULL, subject_id_col="subj
             nest(data = everything(), .by=grouping_id_col) %>%
             dplyr::slice_sample(n = resample_num, replace=TRUE) 
 
-            counter <- sapply(unique(tract_df[[grouping_id_col]]), function(x) 0) } 
+            counter <- sapply(unique(as.character(tract_df[[grouping_id_col]])), 
+                              function(x) 0) } 
 
     for (ii in 1:length(nested_df$data)) { 
         if (!is.null(grouping_id_col)) { 
-            group_id <- unique(nested_df$data[[ii]][[grouping_id_col]])
+            group_id <- as.character(unique(nested_df$data[[ii]][[grouping_id_col]]))
             count <- counter[[group_id]]
             nested_df$data[[ii]][[grouping_id_col]] <- paste(
                 group_id, count, sep='_')
