@@ -164,12 +164,14 @@ tractr_single_bundle <- function(df_afq = NULL,
   dir.create(stats_dir, showWarnings = FALSE, recursive = TRUE)
 
   selected <- select_bundle(
-    df_afq,
-    tract,
-    dwi_metric,
-    participant_id,
-    covariates,
-    group_by)
+    df_afq=df_afq,
+    tract=tract,
+    dwi_metric=dwi_metric,
+    covariates=covariates,
+    participant_id = "subjectID",
+    group_by = "group",
+    ... = ...)
+
 
   df_tract <- selected$df_tract
   tract_names <- selected$tract_names

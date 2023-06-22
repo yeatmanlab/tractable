@@ -8,7 +8,7 @@
 #'     This list can also include smoothing terms.
 #' @param participant_id The name of the column that encodes participant ID
 #' @param group_by The grouping variable used to group nodeID smoothing terms
-#' @param ... arguments to be passed to read.afq.files 
+#' @param ... arguments to be passed to read.afq.files
 #'
 #' @return An AFQ dataframe containing only the selected bundle
 #' @export
