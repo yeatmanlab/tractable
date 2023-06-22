@@ -253,39 +253,53 @@ sampling_test <- function(df_tract,
 #' with replacement. Returns resampled dataframe with column specifying 
 #' how many times that family was resampled. 
 #' @param df input dataframe, can be long or wide
-#' @param 
+#' @param resample_num how many resamples do you want
+#' @param subject_id_col column with subject ids
+#' @param grouping_id_col column to group by - if null, groups by subject
 
-family_sample <- function(df, resample_num=NULL, subject_id_col="subject", grouping_id_col="Family_ID") { 
+bootstrap_resample <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
   
-    if (is.null(resample_num ))  { 
-        resample_num <- unique(df[[family_col]]) } 
-    
     if (is.null(grouping_id_col)) { 
-     test_boot <- df %>% 
+        if (is.null(resample_num ))  { 
+            resample_num <- length(unique(tract_df[[subject_id_col]])) 
+        } 
+
+     print("Grouping by Subject") 
+     nested_df <- tract_df %>% 
             nest(data = everything(), .by=subject_id_col) %>%
             dplyr::slice_sample(n = resample_num, replace=TRUE) 
-        
-       }  else { 
-    test_boot <- df %>% 
-        nest(data = everything(), .by=grouping_id_col) %>%
-        dplyr::slice_sample(n = resample_num, replace=TRUE) 
+     counter <- sapply(unique(tract_df[[subject_id_col]]), function(x) 0)                        
+    }  else { 
+        if (is.null(resample_num)) {  
+            resample_num <- length(unique(tract_df[[grouping_id_col]])) 
+            } 
+        print(paste("Grouping by", grouping_id_col, sep=' '))
+        nested_df <- tract_df %>% 
+            nest(data = everything(), .by=grouping_id_col) %>%
+            dplyr::slice_sample(n = resample_num, replace=TRUE) 
 
-    counter <- sapply(unique(df[[fam_col]]), function(x) 0)
+            counter <- sapply(unique(tract_df[[grouping_id_col]]), function(x) 0) } 
 
-    for (ii in 1:length(test_boot$data)) { 
-        count <- counter[[group_id]]
-        test_boot$data[[ii]][[subject_col]] <- paste(test_boot$data[[ii]][[subject_col]], 
-                                                     count, sep='_')
-        
+    for (ii in 1:length(nested_df$data)) { 
         if (!is.null(grouping_id_col)) { 
-        group_id <- unique(test_boot$data[[ii]][[grouping_id_col]])
-        test_boot$data[[ii]][[grouping_id_col]] <- paste(group_d, count, sep='_')
-        test_boot$data[[ii]][['family_resample_num']] <- count
-        counter[[group_id]] = counter[[group_id]] + 1 } 
+            group_id <- unique(nested_df$data[[ii]][[grouping_id_col]])
+            count <- counter[[group_id]]
+            nested_df$data[[ii]][[grouping_id_col]] <- paste(
+                group_id, count, sep='_')
+           nested_df$data[[ii]][[subject_id_col]] <-paste(
+               nested_df$data[[ii]][[subject_id_col]], count, sep='_')               
+            }
+         else { 
+            subject_id <- unique(nested_df$data[[ii]][[subject_id_col]]) 
+            count <- counter[[subject_id]] 
+            nested_df$data[[ii]][[subject_id_col]] <- paste(subject_id, count, sep='_') 
+            counter[[subject_id]] =count + 1    
+            }     
         } 
-        df <- unnest(test_boot)
-        return(df) 
-} }
+    boot_df <- unnest(nested_df, names_repair="minimal")
+    return(boot_df)     
+}
+
 
 
 cv_split <- function(df_tract, k=5, group.by = NULL) {
