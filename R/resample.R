@@ -258,7 +258,7 @@ sampling_test <- function(df_tract,
 family_sample <- function(df, resample_num=NULL, subject_id_col="subject", grouping_id_col="Family_ID") { 
   
     if (is.null(resample_num ))  { 
-        resample_num <- unique(df[[family_col]] } 
+        resample_num <- unique(df[[family_col]]) } 
     
     if (is.null(grouping_id_col)) { 
      test_boot <- df %>% 
@@ -285,7 +285,7 @@ family_sample <- function(df, resample_num=NULL, subject_id_col="subject", group
         } 
         df <- unnest(test_boot)
         return(df) 
-} 
+} }
 
 
 cv_split <- function(df_tract, k=5, group.by = NULL) {
@@ -297,5 +297,4 @@ cv_split <- function(df_tract, k=5, group.by = NULL) {
     group_fold <- group_vfold_cv(profiles_wide, group=group.by, v=k) 
 
     return(group_fold)
-    
     } 
