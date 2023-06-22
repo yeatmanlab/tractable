@@ -209,7 +209,6 @@ sampling_test <- function(df_tract,
 #' @param grouping_id_col column to group by - if null, groups by subject
 
 bootstrap <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
-  
     if (is.null(grouping_id_col)) { 
         if (is.null(resample_num ))  { 
             resample_num <- length(unique(tract_df[[subject_id_col]])) 
@@ -251,8 +250,6 @@ bootstrap <- function(tract_df, resample_num=NULL, subject_id_col="subject", gro
     return(boot_df)     
 }
 
-
-
 cv_split <- function(df_tract, k=5, group.by = NULL) {
 
 
@@ -262,5 +259,4 @@ cv_split <- function(df_tract, k=5, group.by = NULL) {
     
     group_fold <- group_vfold_cv(profiles_wide, group=group.by, v=k) 
 
-    return(group_fold)
-
+    return(group_fold) } 
