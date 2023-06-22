@@ -247,3 +247,42 @@ sampling_test <- function(df_tract,
   df_sampling_test$pvalue <- unlist(pvalues)
   return(df_sampling_test)
 }
+
+#' Bootstrap data by family
+#' Takes a long dataframe with Family_ID, and resamples families
+#' with replacement. Returns resampled dataframe with column specifying 
+#' how many times that family was resampled. 
+#' @param df input dataframe, can be long or wide
+#' @param 
+
+family_sample <- function(df, resample_num=NULL, subject_id_col="subject", grouping_id_col="Family_ID") { 
+  
+    if (is.null(resample_num ))  { 
+        resample_num <- unique(df[[family_col]] } 
+    
+    if (is.null(grouping_id_col)) { 
+     test_boot <- df %>% 
+            nest(data = everything(), .by=subject_id_col) %>%
+            dplyr::slice_sample(n = resample_num, replace=TRUE) 
+        
+       }  else { 
+    test_boot <- df %>% 
+        nest(data = everything(), .by=grouping_id_col) %>%
+        dplyr::slice_sample(n = resample_num, replace=TRUE) 
+
+    counter <- sapply(unique(df[[fam_col]]), function(x) 0)
+
+    for (ii in 1:length(test_boot$data)) { 
+        count <- counter[[group_id]]
+        test_boot$data[[ii]][[subject_col]] <- paste(test_boot$data[[ii]][[subject_col]], 
+                                                     count, sep='_')
+        
+        if (!is.null(grouping_id_col)) { 
+        group_id <- unique(test_boot$data[[ii]][[grouping_id_col]])
+        test_boot$data[[ii]][[grouping_id_col]] <- paste(group_d, count, sep='_')
+        test_boot$data[[ii]][['family_resample_num']] <- count
+        counter[[group_id]] = counter[[group_id]] + 1 } 
+        } 
+        df <- unnest(test_boot)
+        return(df) 
+} 
