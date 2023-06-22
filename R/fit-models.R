@@ -150,8 +150,8 @@ fit_gam <- function(df_tract,
         )
 
         k.check <- mgcv::k.check(gam_fit)
-        k.indices <- na.omit(k.check[, "k-index"])
-        k.pvals <- na.omit(k.check[, "p-value"])
+        k.indices <- stats::na.omit(k.check[, "k-index"])
+        k.pvals <- stats::na.omit(k.check[, "p-value"])
        }
     } else {
       k.model <- k
