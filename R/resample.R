@@ -203,17 +203,17 @@ sampling_test <- function(df_tract,
 #' Takes a long dataframe with Family_ID, and resamples families
 #' with replacement. Returns resampled dataframe with column specifying 
 #' how many times that family was resampled. 
+
 #' @param df_tract Input dataframe in "long" or "wide" format.
 #' @param resample_num Number of resamples. If NULL, determined by number of subjects 
         # or groups.
 #' @param subject_id_col Column with subject ids.
 #' @param grouping_id_col Column to group by.
+
 #' @return A shuffled AFQ dataframe
 #' @export
 
-
-bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
-  
+bootstrap <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
     if (is.null(grouping_id_col)) { 
         if (is.null(resample_num ))  { 
             resample_num <- length(unique(tract_df[[subject_id_col]])) 
