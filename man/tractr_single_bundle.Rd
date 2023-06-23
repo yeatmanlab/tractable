@@ -8,7 +8,6 @@ tractr_single_bundle(
   df_afq,
   tract,
   dwi_metric,
-  out_dir,
   participant_id = "subjectID",
   group_by = "group",
   covariates = c(group_by),

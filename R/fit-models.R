@@ -74,7 +74,6 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #' @param family Distribution to use for the gam. Must be either 'gamma',
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
-#' @param tract_name Name of the tract, used only for output file names
 #' @param method String, fitting method passed to mgcv::bam
 #' @param ... Further keyword arguments passed to mgcv::bam
 #'

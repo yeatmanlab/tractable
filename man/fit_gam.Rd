@@ -47,8 +47,6 @@ between beta and gamma distributions.}
 \item{method}{String, fitting method passed to mgcv::bam}
 
 \item{...}{Further keyword arguments passed to mgcv::bam}
-
-\item{tract_name}{Name of the tract, used only for output file names}
 }
 \value{
 Fitted GAM model
