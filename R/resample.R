@@ -6,8 +6,8 @@
 #'
 #' @param input_df The input AFQ dataframe
 #' @param dwi_metric The diffusion MRI metric (e.g. "FA", "MD")
-#' @param group_by The grouping variable used to group nodeID smoothing terms
-#' @param participant_id The name of the column that encodes participant ID
+#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant.id The name of the column that encodes participant ID
 #' @param shuffle_vars List of strings of column names that should be shuffled
 #' @param sample_uniform Boolean flag. If TRUE, shuffling should sample
 #'     uniformly from the unique values in the columns. If FALSE, shuffling
@@ -21,7 +21,7 @@
 #' df_afq <- read.csv("/path/to/afq/output.csv")
 #' df_shuffle <- shuffle_df(df_afq, "dti_fa")
 #' }
-shuffle_df <- function(input_df, dwi_metric, group_by = "group", participant_id = "subjectID", shuffle_vars = NULL, sample_uniform = FALSE) {
+shuffle_df <- function(input_df, dwi_metric, group.by = "group", participant.id = "subjectID", shuffle_vars = NULL, sample_uniform = FALSE) {
   # Spread the input dataframe to one row per participant
   col_names <- colnames(input_df)
   wide_df <- tidyr::pivot_wider(
@@ -31,11 +31,11 @@ shuffle_df <- function(input_df, dwi_metric, group_by = "group", participant_id 
   )
 
   if (is.null(shuffle_vars)) {
-    shuffle_vars <- col_names[-which(col_names %in% c("nodeID", "tractID", dwi_metric, participant_id))]
+    shuffle_vars <- col_names[-which(col_names %in% c("nodeID", "tractID", dwi_metric, participant.id))]
   }
 
   # Then shuffle participants' shuffle_vars and the grouping variable
-  for (svar in unique(c(shuffle_vars, group_by))) {
+  for (svar in unique(c(shuffle_vars, group.by))) {
     if (sample_uniform) {
       # Sample uniformly from the unique values
       wide_df[[svar]] <- sample(unique(wide_df[[svar]]), length(wide_df[[svar]]), replace=TRUE)
@@ -48,56 +48,7 @@ shuffle_df <- function(input_df, dwi_metric, group_by = "group", participant_id 
   # Gather back to long format (one row per node)
   output_df <- tidyr::pivot_longer(
     wide_df,
-    -dplyr::any_of(c(participant_id, shuffle_vars, "tractID", group_by)),
-    names_to = "nodeID",
-    values_to = dwi_metric
-  )
-
-  output_df <- dplyr::select(output_df, dplyr::all_of(col_names))
-  output_df$nodeID <- as.integer(output_df$nodeID)
-
-  return(output_df)
-}
-
-#' Bootstrap an AFQ dataframe
-#'
-#' This function bootstrap samples an AFQ dataframe by participant.
-#' That is, it first pivots to wide format with one row per participant,
-#' bootstrap samples, and finally pivots back to long format.
-#'
-#' @param input_df The input AFQ dataframe
-#' @param dwi_metric The diffusion MRI metric (e.g. "FA", "MD")
-#' @param group_by The grouping variable used to group nodeID smoothing terms
-#' @param participant_id The name of the column that encodes participant ID
-#'
-#' @return A shuffled AFQ dataframe
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' df_afq <- read.csv("/path/to/afq/output.csv")
-#' df_boot <- bootstrap_df(df_afq, "dti_fa")
-#' }
-bootstrap_df <- function(input_df,
-                         dwi_metric,
-                         group_by = "group",
-                         participant_id = "subjectID") {
-  # Spread the input dataframe to one row per participant
-  col_names <- colnames(input_df)
-  wide_df <- tidyr::pivot_wider(
-    input_df,
-    names_from = "nodeID",
-    values_from = dwi_metric
-  )
-
-  wide_df <- dplyr::slice_sample(wide_df, n = length(wide_df), replace = TRUE)
-
-  dont_pivot_cols <- col_names[-which(col_names %in% c("nodeID", dwi_metric))]
-
-  # Gather back to long format (one row per node)
-  output_df <- tidyr::pivot_longer(
-    wide_df,
-    -dplyr::any_of(dont_pivot_cols),
+    -dplyr::any_of(c(participant.id, shuffle_vars, "tractID", group.by)),
     names_to = "nodeID",
     values_to = dwi_metric
   )
@@ -124,8 +75,8 @@ bootstrap_df <- function(input_df,
 #' @param n_samples Number of sample tests to perform
 #' @param dwi_metric The diffusion metric to model (e.g. "FA", "MD")
 #' @param tract AFQ tract name
-#' @param group_by The grouping variable used to group nodeID smoothing terms
-#' @param participant_id The name of the column that encodes participant ID
+#' @param group.by The grouping variable used to group nodeID smoothing terms
+#' @param participant.id The name of the column that encodes participant ID
 #' @param sample_uniform Boolean flag. If TRUE, shuffling should sample
 #'     uniformly from the unique values in the columns. If FALSE, shuffling
 #'     will shuffle without replacement.
@@ -161,8 +112,8 @@ sampling_test <- function(df_tract,
                           n_samples,
                           dwi_metric,
                           tract,
-                          group_by = "group",
-                          participant_id = "subjectID",
+                          group.by = "group",
+                          participant.id = "subjectID",
                           sample_uniform = FALSE,
                           covariates = NULL,
                           smooth_terms = NULL,
@@ -172,7 +123,7 @@ sampling_test <- function(df_tract,
                           factor_a = NULL,
                           factor_b = NULL,
                           permute = FALSE) {
-  if (group_by %in% covariates) {
+  if (group.by %in% covariates) {
     coefs <- vector(mode = "list", length = n_samples)
     pvalues <- vector(mode = "list", length = n_samples)
   }
@@ -187,30 +138,30 @@ sampling_test <- function(df_tract,
     if (permute) {
       df_shuffle <- shuffle_df(input_df = df_tract,
                                dwi_metric = dwi_metric,
-                               group_by = group_by,
-                               participant_id = participant_id,
+                               group.by = group.by,
+                               participant.id = participant.id,
                                shuffle_vars = covariates,
                                sample_uniform = sample_uniform)
     } else {
       df_shuffle <- bootstrap_df(input_df = df_tract,
                                  dwi_metric = dwi_metric,
-                                 group_by = group_by,
-                                 participant_id = participant_id)
+                                 group.by = group.by,
+                                 participant.id = participant.id)
     }
 
     gam_shuffle <- fit_gam(df_tract = df_shuffle,
                            target = dwi_metric,
                            covariates = covariates,
                            smooth_terms = smooth_terms,
-                           group_by = group_by,
-                           participant_id = participant_id,
+                           group.by = group.by,
+                           participant.id = participant.id,
                            formula = formula,
                            k = k,
                            family = family)
     ff <- summary(gam_shuffle)
-    pvalues[[idx]] <- ff$p.table[,"Pr(>|t|)"][[paste0(group_by, factor_b)]]
-    if (group_by %in% covariates) {
-      coef_name <- grep(paste0("^", group_by),
+    pvalues[[idx]] <- ff$p.table[,"Pr(>|t|)"][[paste0(group.by, factor_b)]]
+    if (group.by %in% covariates) {
+      coef_name <- grep(paste0("^", group.by),
                         names(gam_shuffle$coefficients),
                         value = TRUE)
 
@@ -220,7 +171,7 @@ sampling_test <- function(df_tract,
     if (!is.null(factor_a) & !is.null(factor_b)) {
       df_pair <- spline_diff(gam_model = gam_shuffle,
                              tract = tract,
-                             group_by = group_by,
+                             group.by = group.by,
                              factor_a,
                              factor_b,
                              save_output = FALSE,
@@ -240,7 +191,7 @@ sampling_test <- function(df_tract,
     id_cols = "permIdx"
   )
 
-  if (group_by %in% covariates) {
+  if (group.by %in% covariates) {
     df_sampling_test$group_coefs <- unlist(coefs)
   }
 
@@ -257,13 +208,12 @@ sampling_test <- function(df_tract,
 #' @param subject_id_col column with subject ids
 #' @param grouping_id_col column to group by - if null, groups by subject
 
-bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
+bootstrap <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
   
     if (is.null(grouping_id_col)) { 
         if (is.null(resample_num ))  { 
             resample_num <- length(unique(tract_df[[subject_id_col]])) 
         } 
-
      print("Grouping by Subject") 
      nested_df <- tract_df %>% 
             nest(data = everything(), .by=subject_id_col) %>%
@@ -297,7 +247,7 @@ bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subjec
             counter[[subject_id]] =count + 1    
             }     
         } 
-    boot_df <- unnest(nested_df, names_repair="minimal")
+    boot_df <- unnest(nested_df, cols = c(data), names_repair="minimal")
     return(boot_df)     
 }
 
@@ -305,7 +255,7 @@ bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subjec
 
 cv_split <- function(df_tract, k=5, group.by = NULL) {
 
-  df_profiles <- df_profiles %>% pivot_wider(names_from = c('tractID', 'nodeID'), 
+  df_tract <- df_tract %>% pivot_wider(names_from = c('tractID', 'nodeID'), 
                             values_from = all_of(sel_metrics), 
                             names_sep = '/')
     
