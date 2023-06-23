@@ -177,8 +177,15 @@ fit_gam <- function(df_tract,
           method = method,
           ... = ...
   )
-
   if (save_output) {
+    save_gam_outputs(gam_fit, out_dir, tract_name)
+    }
+
+  return(gam_fit)
+}
+
+
+save_gam_outputs <- function(gam_fit, out_dir, tract_name){
     utils::capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
       file = file.path(out_dir, paste0(
@@ -200,6 +207,3 @@ fit_gam <- function(df_tract,
         )))
 
   }
-
-  return(gam_fit)
-}

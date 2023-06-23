@@ -119,6 +119,7 @@ tractr_bwas <- function(df_afq = NULL,
 #'   Gavin Simpson's code, here the Bayesian posterior covariance matrix of
 #'   the parameters is uncertainty corrected (unconditional=TRUE) to reflect
 #'   the uncertainty on the estimation of smoothness parameters.
+#' @param save_output Boolean, whether to save extensive outputs of the model.
 #' @param ... Arguments to pass to fit_gam
 #'
 #' @export
@@ -153,6 +154,7 @@ tractr_single_bundle <- function(df_afq,
                                  k = "auto",
                                  family = "auto",
                                  sim.ci = FALSE,
+                                 save_output = FALSE,
                                  ...) {
   # Create output directories
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
@@ -184,7 +186,7 @@ tractr_single_bundle <- function(df_afq,
                      family = family,
                      tract_name = tract,
                      out_dir = stats_dir,
-                     save_output = TRUE,
+                     save_output = save_output,
                      ... = ...)
 
   for (this_tract in tract_names) {

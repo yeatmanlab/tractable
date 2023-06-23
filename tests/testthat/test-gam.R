@@ -1,5 +1,3 @@
-
-
 test_that("gams run as expected", {
  sarica <- read.afq.sarica()
  sarica$group <- factor(sarica$class)
