@@ -13,12 +13,8 @@ tractr_single_bundle(
   group_by = "group",
   covariates = c(group_by),
   smooth_terms = NULL,
-  comp_list = unique(df_afq[[group_by]]),
-  resampling_technique = NULL,
-  n_samples = 100,
   k = "auto",
   family = "auto",
-  sim.ci = FALSE,
   ...
 )
 }
@@ -29,8 +25,6 @@ using read.afq.data and the additional arguments in ...}
 \item{tract}{Abbreviated tract name, e.g., "CST_L" or "OR"}
 
 \item{dwi_metric}{The diffusion metric to model (e.g. "FA", "MD")}
-
-\item{out_dir}{Directory in which to save text output and plots}
 
 \item{participant_id}{The name of the column that encodes participant ID}
 
@@ -43,17 +37,6 @@ to subjectID.}
 \item{smooth_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
-\item{comp_list}{List of factor strings for pairwise comparison.
-These should be values from the group column in the AFQ CSV file.}
-
-\item{resampling_technique}{Type of resampling technique, either "boostrap,"
-"permute," or NULL. If NULL, no resampling test is performed. If
-"bootstrap," use bootstrap resampling to estimate confidence intervals.
-If "permute," use permutation resampling to estimate the null
-distribution.}
-
-\item{n_samples}{Number of bootstrap or permutation samples}
-
 \item{k}{Dimension of the basis used to represent the node smoothing term,
 If k = 'auto', this function will attempt to find the best value}
 
@@ -61,35 +44,19 @@ If k = 'auto', this function will attempt to find the best value}
 'beta', or 'auto'. If 'auto', this function will select the best fit
 between beta and gamma distributions.}
 
-\item{sim.ci}{Logical: Using simultaneous confidence intervals or not
-(default set to FALSE). The implementation of simultaneous CIs follows
-Gavin Simpson's blog of December 15, 2016:
-http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
-This interval is calculated from simulations based. Please specify a seed
-(e.g., set.seed(123)) for reproducable results. Note: in contrast with
-Gavin Simpson's code, here the Bayesian posterior covariance matrix of
-the parameters is uncertainty corrected (unconditional=TRUE) to reflect
-the uncertainty on the estimation of smoothness parameters.}
-
 \item{...}{Arguments to pass to fit_gam}
 }
 \description{
 Analyze group differences in a single dMRI tract profile using GAMs
 }
 \examples{
-\dontrun{
 sarica <- read.afq.sarica()
 sarica$group <- factor(sarica$class)
 sarica$subjectID <- unclass(factor(sarica$subjectID))
 tractr_single_bundle(df_afq = sarica,
-                     out_dir = ".",
                      tract = "Right Corticospinal",
                      participant_id = "subjectID",
                      group_by = "group",
                      covariates = c("age","group"),
-                     dwi_metric = "fa",
-                     comp_list = c("ALS", "CTRL"),
-                     resampling_technique = "bootstrap",
-                     n_samples = 100)
-}
+                     dwi_metric = "fa")
 }

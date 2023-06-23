@@ -6,7 +6,7 @@
 \usage{
 fit_gam(
   df_tract,
-  target,
+  target = NULL,
   covariates = NULL,
   smooth_terms = NULL,
   group_by = "group",
@@ -14,9 +14,6 @@ fit_gam(
   formula = NULL,
   k = 40,
   family = "auto",
-  tract_name = "",
-  out_dir = ".",
-  save_output = FALSE,
   method = "fREML",
   ...
 )
@@ -47,15 +44,11 @@ If k = 'auto', this function will attempt to find the best value}
 'beta', or 'auto'. If 'auto', this function will select the best fit
 between beta and gamma distributions.}
 
-\item{tract_name}{Name of the tract, used only for output file names}
-
-\item{out_dir}{Directory in which to save gam stats}
-
-\item{save_output}{Boolean flag to save gam stat files}
-
 \item{method}{String, fitting method passed to mgcv::bam}
 
 \item{...}{Further keyword arguments passed to mgcv::bam}
+
+\item{tract_name}{Name of the tract, used only for output file names}
 }
 \value{
 Fitted GAM model
