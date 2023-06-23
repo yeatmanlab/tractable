@@ -208,9 +208,9 @@ sampling_test <- function(df_tract,
         # or groups.
 #' @param subject_id_col Column with subject ids.
 #' @param grouping_id_col Column to group by.
-
 #' @return A shuffled AFQ dataframe
 #' @export
+
 
 bootstrap_tracts <- function(tract_df, resample_num=NULL, subject_id_col="subject", grouping_id_col=NULL) { 
   

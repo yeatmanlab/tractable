@@ -3,7 +3,7 @@ test_that("bootstrap_tracts generates a df with correct dimensions",
     #checks if size is correct
    df_afq <- read.afq.sarica()
    set.seed(0)
-   df_boot <- bootstrap_tracts(df_afq,
+   df_boot <- tractr::bootstrap(df_afq,
               subject_id_col='subjectID')
         
   expect_equal(dim(df_afq)[1], dim(df_boot)[1])
@@ -11,13 +11,14 @@ test_that("bootstrap_tracts generates a df with correct dimensions",
 
 # test_that("bootstrap_df resamples an afq dataframe by group", 
 #     {
-
-#     #checks if size is correct
 #    df_afq <- read.afq.sarica()
 #    set.seed(0)
-#    df_boot <- bootstrap_resample(df_afq,
-#               subject_id_col='subjectID')
-#    df_ref <- read.csv("sarica_bootstrap_test_df")
+#    df_boot <- tractr::bootstrap(df_afq,
+#               subject_id_col='subjectID',
+#                 grouping_id_col='age')
 
-#   expect_true(dplyr::all_equal(dim(df_boot)[1], dim(df_ref)[1]))
+#     length(df_afq)
+        
+#   expect_equal(dim(df_afq)[1], dim(df_boot)[1])
+
 # })
