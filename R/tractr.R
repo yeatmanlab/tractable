@@ -170,8 +170,8 @@ tractr_single_bundle <- function(df_afq,
     tract = tract,
     dwi_metric = dwi_metric,
     covariates = covariates,
-    participant_id = "subjectID",
-    group_by = "group")
+    participant_id = participant_id,
+    group_by = group_by)
 
   df_tract <- selected$df_tract
   tract_names <- selected$tract_names
@@ -184,87 +184,10 @@ tractr_single_bundle <- function(df_afq,
                      participant_id = participant_id,
                      k = k,
                      family = family,
-                     tract_name = tract,
+                     tract_name = tract_names,
                      out_dir = stats_dir,
                      save_output = save_output,
                      ... = ...)
-
-  for (this_tract in tract_names) {
-    this_df <- df_tract[which(df_tract$tractID == this_tract), ]
-
-    if (tract == "all") {
-      this_comp_list <- grep(paste0("^", this_tract),
-                             unique(df_tract[[group_by]]),
-                             value = TRUE)
-    } else {
-      this_comp_list <- comp_list
-    }
-
-    if (!is.null(resampling_technique)) {
-      permute <- resampling_technique == "permute"
-
-      df_resampling <- sampling_test(df_tract = this_df,
-                                     n_samples = n_samples,
-                                     dwi_metric = dwi_metric,
-                                     tract = this_tract,
-                                     group_by = group_by,
-                                     participant_id = participant_id,
-                                     covariates = covariates,
-                                     sample_uniform = TRUE,
-                                     family = gam_fit$family,
-                                     formula = gam_fit$formula,
-                                     factor_a = this_comp_list[1],
-                                     factor_b = this_comp_list[2],
-                                     permute = permute)
-
-      filename <- paste0(resampling_technique,
-                         "_",
-                         sub(" ", "_", this_tract),
-                         ".csv")
-      utils::write.csv(df_resampling,
-                       file.path(stats_dir, filename),
-                       row.names = FALSE)
-
-      # if (group_by %in% covariates) {
-      #   coef_name <- grep(paste0("^", group_by),
-      #                     names(gam_fit$coefficients),
-      #                     value = TRUE)
-      #   observed_coef = gam_fit$coefficients[[coef_name]]
-      #   group_p_value = sum(
-      #     abs(df_resampling$group_coefs) >= abs(observed_coef)
-      #   ) / length(df_resampling$group_coefs)
-      #
-      #   print(paste0("Bootstrapped group p value = ", group_p_value))
-      # }
-    }
-
-    plot_gam_splines(gam_model = gam_fit,
-                     tract = this_tract,
-                     df_tract = this_df,
-                     dwi_metric = dwi_metric,
-                     covariates = covariates,
-                     group_by = group_by,
-                     participant_id = participant_id,
-                     out_dir = plot_dir)
-
-    if (!is.null(group_by)) {
-      df_diff <- spline_diff(gam_model = gam_fit,
-                             tract = tract,
-                             group_by = group_by,
-                             factor_a = this_comp_list[1],
-                             factor_b = this_comp_list[2],
-                             out_dir = plot_dir,
-                             save_output = FALSE,
-                             sim.ci = sim.ci)
-
-      filename <- paste0("spline_diff_",
-                         sub(" ", "_", this_tract),
-                         ".csv")
-      utils::write.csv(df_diff,
-                       file.path(stats_dir, filename),
-                       row.names = FALSE)
-    }
-  }
 
   return(gam_fit)
 }
