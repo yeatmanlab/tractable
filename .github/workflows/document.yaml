@@ -30,13 +30,10 @@ jobs:
         run: roxygen2::roxygenise()
         shell: Rscript {0}
 
-      - name: commit
+      - name: commit and push 
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add man/\* NAMESPACE
-          git commit -m '[GHA] Automatic documentation'
-
-      - name: push
-        run: |
-          ! grep "nothing to commit" <<< $(git status) && git push
+          git diff-index --quiet HEAD || (git commit -m '[GHA] Automatic documentation' && git push)
+          
