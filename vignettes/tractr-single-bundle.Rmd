@@ -19,17 +19,38 @@ library(tractr)
 ```
 
 ```{r}
+# SARICA
 sarica <- tractr::read.afq.sarica()
 sarica$group <- factor(sarica$class)
 sarica$subjectID <- unclass(factor(sarica$subjectID))
-tractr_single_bundle(df_afq = sarica,
-                    out_dir = ".",
-                    tract = "Right Corticospinal",
-                    participant.id = "subjectID",
-                    group.by = "group",
-                    covariates = c("age","group"),
-                    dwi_metric = "fa",
-                    comp_list = c("ALS", "CTRL"),
-                    resampling_technique = "bootstrap",
-                    n_samples = 100)
+
+tractr::plot_tract_profiles(sarica,
+                            group_col = "group",
+                            n_groups = 2,
+                            metrics = c("fa", "md"),
+                            bundles = list("Right Corticospinal",
+                                           "Right SLF"),
+                            bundles_col  = "tractID")
+
+
+gam_fit_cst <- tractr_single_bundle(df_afq = sarica,
+                                    tract = "Right Corticospinal",
+                                    participant_id = "subjectID",
+                                    group_by = "group",
+                                    covariates = c("age", "group"),
+                                    dwi_metric = "fa",
+                                    k = "auto")
+
+summary(gam_fit_cst)
+
+gam_fit_slf <- tractr_single_bundle(df_afq = sarica,
+                                    tract = "Right SLF",
+                                    participant_id = "subjectID",
+                                    group_by = "group",
+                                    covariates = c("age","group"),
+                                    dwi_metric = "fa",
+                                    k = 40)
+
+summary(gam_fit_slf)
+
 ```
