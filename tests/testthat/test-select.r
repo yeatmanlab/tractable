@@ -16,6 +16,7 @@ tract_names <- selected$tract_names
 
 expect_identical(unique(df_tract$tractID), "Right Corticospinal")
 expect_identical(tract_names, c("Right Corticospinal"))
+expect_identical(length(colnames(df_tract)), as.integer(6))
 
  selected <- expect_no_error(
     select_bundle(df_afq = sarica,
