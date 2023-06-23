@@ -300,6 +300,7 @@ spline_diff <- function(gam_model,
 #' @param ribbon_alpha Ribbon alpha level.
 #' @param n_groups Number of groups to split a numeric grouping variable.
 #' @param pal_name Grouping color palette name, character. Default is colorblind.
+#' @param save_fig Boolean. If TRUE, saves figures in `out_dir`.
 #' @param out_dir Output directory of saved plots. 
 #' @param figsize Figure size. A numeric vector of (width, height) in inches.
 #'
@@ -341,8 +342,9 @@ plot_tract_profiles <- function (
     ribbon_alpha = 0.25,
     n_groups     = 3, 
     pal_name     = "colorblind", 
+    save_fig     = FALSE,
     out_dir      = getwd(), 
-    figsize      = c(8, 11.5)
+    figsize      = c(10, 6)
 ) {
   
   # argument preparation
@@ -415,17 +417,20 @@ plot_tract_profiles <- function (
       plot_handle <- plot_handle + theme(legend.position = "none")
     }
     
-    # save tract profile figure
-    plot_fname <- paste0("tract-profile_by-", group_col, "_", 
-                         stringr::str_replace_all(curr_metric, "_", "-"), ".png")
-    ggplot2::ggsave(
-      filename = file.path(out_dir, plot_fname),
-      plot     = plot_handle,
-      width    = figsize[1],
-      height   = figsize[2],
-      units    = "in",
-      device   = "png"
-    )  
+    # save tract profile figure if specified
+    if (save_fig) {
+      group_name <- ifelse(group_col == "_group", "", paste0("by-", group_col, "_"))
+      plot_fname <- paste0("tract-profile_", group_name,  
+                           stringr::str_replace_all(curr_metric, "_", "-"), ".png")
+      ggplot2::ggsave(
+        filename = file.path(out_dir, plot_fname),
+        plot     = plot_handle,
+        width    = figsize[1],
+        height   = figsize[2],
+        units    = "in",
+        device   = "png"
+      )  
+    }
     
     # collect plot handles by metric
     plot_handles <- c(plot_handles, list(plot_handle))
