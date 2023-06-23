@@ -75,8 +75,6 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
 #' @param tract_name Name of the tract, used only for output file names
-#' @param out_dir Directory in which to save gam stats
-#' @param save_output Boolean flag to save gam stat files
 #' @param method String, fitting method passed to mgcv::bam
 #' @param ... Further keyword arguments passed to mgcv::bam
 #'
@@ -103,11 +101,12 @@ fit_gam <- function(df_tract,
                     formula = NULL,
                     k = 40,
                     family = "auto",
-                    tract_name = "",
-                    out_dir = ".",
-                    save_output = FALSE,
                     method="fREML",
                     ...) {
+
+  # XXX Check that target and formula are not both provided, because this
+  # could do something unexpected.
+
   # Set link family
   if (is.character(family) | is.null(family)) {
     if (is.null(family) | tolower(family) == "auto") {
@@ -177,10 +176,6 @@ fit_gam <- function(df_tract,
           method = method,
           ... = ...
   )
-  if (save_output) {
-    save_gam_outputs(gam_fit, out_dir, tract_name)
-    }
-
   return(gam_fit)
 }
 

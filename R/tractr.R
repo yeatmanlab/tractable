@@ -96,50 +96,25 @@ tractr_bwas <- function(df_afq = NULL,
 #'     to subjectID.
 #' @param smooth_terms Smoothing terms, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#' @param comp_list List of factor strings for pairwise comparison.
-#'     These should be values from the group column in the AFQ CSV file.
-#' @param out_dir Directory in which to save text output and plots
-#' @param resampling_technique Type of resampling technique, either "boostrap,"
-#'     "permute," or NULL. If NULL, no resampling test is performed. If
-#'     "bootstrap," use bootstrap resampling to estimate confidence intervals.
-#'     If "permute," use permutation resampling to estimate the null
-#'     distribution.
-#' @param n_samples Number of bootstrap or permutation samples
 #' @param k Dimension of the basis used to represent the node smoothing term,
 #'     If k = 'auto', this function will attempt to find the best value
 #' @param family Distribution to use for the gam. Must be either 'gamma',
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
-#' @param sim.ci Logical: Using simultaneous confidence intervals or not
-#'   (default set to FALSE). The implementation of simultaneous CIs follows
-#'   Gavin Simpson's blog of December 15, 2016:
-#'   http://www.fromthebottomoftheheap.net/2016/12/15/simultaneous-interval-revisited/.
-#'   This interval is calculated from simulations based. Please specify a seed
-#'   (e.g., set.seed(123)) for reproducable results. Note: in contrast with
-#'   Gavin Simpson's code, here the Bayesian posterior covariance matrix of
-#'   the parameters is uncertainty corrected (unconditional=TRUE) to reflect
-#'   the uncertainty on the estimation of smoothness parameters.
-#' @param save_output Boolean, whether to save extensive outputs of the model.
 #' @param ... Arguments to pass to fit_gam
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' sarica <- read.afq.sarica()
 #' sarica$group <- factor(sarica$class)
 #' sarica$subjectID <- unclass(factor(sarica$subjectID))
 #' tractr_single_bundle(df_afq = sarica,
-#'                      out_dir = ".",
 #'                      tract = "Right Corticospinal",
 #'                      participant_id = "subjectID",
 #'                      group_by = "group",
 #'                      covariates = c("age","group"),
-#'                      dwi_metric = "fa",
-#'                      comp_list = c("ALS", "CTRL"),
-#'                      resampling_technique = "bootstrap",
-#'                      n_samples = 100)
-#' }
+#'                      dwi_metric = "fa")
 tractr_single_bundle <- function(df_afq,
                                  tract,
                                  dwi_metric,
@@ -148,23 +123,9 @@ tractr_single_bundle <- function(df_afq,
                                  group_by = "group",
                                  covariates = c(group_by),
                                  smooth_terms = NULL,
-                                 comp_list = unique(df_afq[[group_by]]),
-                                 resampling_technique = NULL,
-                                 n_samples = 100,
                                  k = "auto",
                                  family = "auto",
-                                 sim.ci = FALSE,
-                                 save_output = FALSE,
                                  ...) {
-  # Create output directories
-  dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-
-  plot_dir <- file.path(out_dir, "plots")
-  dir.create(plot_dir, showWarnings = FALSE, recursive = TRUE)
-
-  stats_dir <- file.path(out_dir, "stats")
-  dir.create(stats_dir, showWarnings = FALSE, recursive = TRUE)
-
   selected <- select_bundle(
     df_afq = df_afq,
     tract = tract,
@@ -184,9 +145,6 @@ tractr_single_bundle <- function(df_afq,
                      participant_id = participant_id,
                      k = k,
                      family = family,
-                     tract_name = tract_names,
-                     out_dir = stats_dir,
-                     save_output = save_output,
                      ... = ...)
 
   return(gam_fit)
