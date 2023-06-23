@@ -39,4 +39,4 @@ jobs:
 
       - name: push
         run: |
-          grep -R "nothing to commit" <<< $(git status) && git push
+          ! grep "nothing to commit" <<< $(git status) && git push
