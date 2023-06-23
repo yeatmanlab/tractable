@@ -95,7 +95,7 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #'                    k = "auto")
 #' }
 fit_gam <- function(df_tract,
-                    target,
+                    target = NULL,
                     covariates = NULL,
                     smooth_terms = NULL,
                     group_by = "group",
