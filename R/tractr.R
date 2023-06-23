@@ -49,7 +49,6 @@ tractr_single_bundle <- function(df_afq,
     group_by = group_by)
 
   df_tract <- selected$df_tract
-  tract_names <- selected$tract_names
 
   gam_fit <- fit_gam(df_tract = df_tract,
                      target = dwi_metric,
