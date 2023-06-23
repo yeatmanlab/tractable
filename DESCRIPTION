@@ -26,7 +26,7 @@ Authors@R:
            family = "Rokem",
            email = "arokem@gmail.com",
            role = c("aut"),
-           comment = c(ORCID = "XXX")))
+           comment = c(ORCID = "0000-0003-0679-1985")))
 Author: Adam Richie-Halford [aut, cre],
     Kelly Chang (aut),
     Teresa Gomez (aut),
