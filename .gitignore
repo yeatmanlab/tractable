@@ -1,3 +1,6 @@
+*.Rprofile
+*/renv/
+.Rbuildignore
 **.ipynb_checkpoints*
 .Rproj.user
 .Rhistory
