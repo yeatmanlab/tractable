@@ -174,7 +174,7 @@ plot_gam_splines <- function(
 #'   the uncertainty on the estimation of smoothness parameters.
 #' @param out_dir Directory in which to save plots
 #'
-#' @return A dataframe of spline differences at each node
+#' @return A data frame of spline differences at each node
 #' @export
 #'
 #' @examples
@@ -285,12 +285,14 @@ spline_diff <- function(gam_model,
 #' @param df Data frame.
 #' @param metrics Name(s) of the metrics to plot per figure, character vector. 
 #'          By default, will be all diffusion metrics in the provided data frame.
+#' @param node_col Column name in the provided data frame with the node ID, 
+#'          character.
 #' @param bundles Name(s) of the tract bundles to plot per facet, character 
 #'          vector. By default, will be all tract bundles in the provided data 
 #'          frame.
-#' @param bundles_col Name of the column in the provided data frame with the 
-#'          tract bundles.
-#' @param group_col Name of the column in the data frame to group by as a color, 
+#' @param bundles_col Column names in the provided data frame with the tract
+#'          bundles, character.
+#' @param group_col Column name in the data frame to group by as a color, 
 #'          character. By default, no grouping variable is provided.
 #' @param line_func Line function that provides the line positioning. See 
 #'          \link[ggplot2]{stat_summary} for more information.
@@ -306,6 +308,8 @@ spline_diff <- function(gam_model,
 #'
 #' @return List of plot handles corresponding to the specified metrics.
 #' 
+#' @importFrom stats family
+#' @importFrom rlang .data
 #' @export
 #' 
 #' @examples
@@ -333,6 +337,7 @@ spline_diff <- function(gam_model,
 plot_tract_profiles <- function (
     df, 
     metrics      = NULL, 
+    node_col     = "nodeID", 
     bundles      = NULL, 
     bundles_col  = "tractID", 
     group_col    = NULL,
@@ -344,7 +349,7 @@ plot_tract_profiles <- function (
     pal_name     = "colorblind", 
     save_fig     = FALSE,
     out_dir      = getwd(), 
-    figsize      = c(10, 6)
+    figsize      = c(8, 11.5)
 ) {
   
   # argument preparation
@@ -371,10 +376,16 @@ plot_tract_profiles <- function (
     "median_hilow"   = ggplot2::median_hilow
   )
   
+  # bind local variables for plotting
+  metric <- nodes <- tracts <- value <- NULL
+  
   # prepare data.frame for plotting
   plot_df <- df %>% 
     tidyr::pivot_longer(cols = tidyselect::all_of(metrics), names_to = "metric") %>% 
-    dplyr::rename(tracts = tidyselect::all_of(bundles_col)) %>% 
+    dplyr::rename(
+      nodes  = tidyselect::all_of(node_col), 
+      tracts = tidyselect::all_of(bundles_col)
+    ) %>% 
     dplyr::filter(tracts %in% bundles, metric %in% metrics) 
   
   # factorized grouping variable, split into groups if numeric
@@ -399,8 +410,9 @@ plot_tract_profiles <- function (
     # create current metric figure handle
     plot_handle <- plot_df %>% 
       dplyr::filter(metric == curr_metric) %>% 
-      ggplot2::ggplot(ggplot2::aes(x = nodeID, y = value, group = .data[[group_col]],
-                          color = .data[[group_col]], fill = .data[[group_col]])) +
+      ggplot2::ggplot(ggplot2::aes(x = nodes, y = value, 
+            group = .data[[group_col]], color = .data[[group_col]], 
+            fill = .data[[group_col]])) +
       ggplot2::stat_summary(
         color = NA, geom = "ribbon", fun.data = ribbon_func, alpha = ribbon_alpha) +
       ggplot2::stat_summary(
