@@ -19,7 +19,7 @@ library(tractr)
 ```
 
 ```{r}
-sarica <- read.afq.sarica()
+sarica <- tractr::read.afq.sarica()
 sarica$group <- factor(sarica$class)
 sarica$subjectID <- unclass(factor(sarica$subjectID))
 tractr_single_bundle(df_afq = sarica,
