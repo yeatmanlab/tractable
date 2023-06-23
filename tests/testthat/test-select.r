@@ -11,5 +11,9 @@ test_that("select_bundle runs as expected", {
                   participant_id = "subjectID",
                   group_by = "group")
                 )
+df_tract <- selected$df_tract
+tract_names <- selected$tract_names
 
+expect_identical(unique(df_tract$tractID), "Right Corticospinal")
+expect_identical(tract_names, c("Right Corticospinal"))
     })
