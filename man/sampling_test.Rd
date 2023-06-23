@@ -9,8 +9,8 @@ sampling_test(
   n_samples,
   dwi_metric,
   tract,
-  group.by = "group",
-  participant.id = "subjectID",
+  group_by = "group",
+  participant_id = "subjectID",
   sample_uniform = FALSE,
   covariates = NULL,
   smooth_terms = NULL,
@@ -31,9 +31,9 @@ sampling_test(
 
 \item{tract}{AFQ tract name}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 
 \item{sample_uniform}{Boolean flag. If TRUE, shuffling should sample
 uniformly from the unique values in the columns. If FALSE, shuffling

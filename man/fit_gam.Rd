@@ -6,17 +6,16 @@
 \usage{
 fit_gam(
   df_tract,
-  target,
+  target = NULL,
   covariates = NULL,
   smooth_terms = NULL,
-  group.by = "group",
-  participant.id = "subjectID",
+  group_by = "group",
+  participant_id = "subjectID",
   formula = NULL,
   k = 40,
   family = "auto",
-  tract_name = "",
-  out_dir = ".",
-  save_output = FALSE
+  method = "fREML",
+  ...
 )
 }
 \arguments{
@@ -30,9 +29,9 @@ the smoothing terms over nodes and the random effect due to subjectID.}
 \item{smooth_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 
 \item{formula}{Optional explicit formula to use for the GAM. If provided,
 this will override the dynamically generated formula build from the
@@ -45,11 +44,9 @@ If k = 'auto', this function will attempt to find the best value}
 'beta', or 'auto'. If 'auto', this function will select the best fit
 between beta and gamma distributions.}
 
-\item{tract_name}{Name of the tract, used only for output file names}
+\item{method}{String, fitting method passed to mgcv::bam}
 
-\item{out_dir}{Directory in which to save gam stats}
-
-\item{save_output}{Boolean flag to save gam stat files}
+\item{...}{Further keyword arguments passed to mgcv::bam}
 }
 \value{
 Fitted GAM model
