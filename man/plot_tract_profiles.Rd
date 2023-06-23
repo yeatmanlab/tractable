@@ -66,20 +66,20 @@ df <- read.afq.sarica()
 
 plot_tract_profiles(
   df,
-  metrics = c("fa"), 
-  bundles = c("Left Corticospinal", "Right Corticospinal"), 
+  metrics = c("fa"),
+  bundles = c("Left Corticospinal", "Right Corticospinal"),
   group_col = "class",
   figsize   = c(8, 6)
-)   
+)
 
 plot_tract_profiles(
   df,
-  metrics = c("fa"), 
-  bundles = c("Left Corticospinal", "Right Corticospinal"), 
-  group_col = "age", 
-  n_groups  = 3, 
+  metrics = c("fa"),
+  bundles = c("Left Corticospinal", "Right Corticospinal"),
+  group_col = "age",
+  n_groups  = 3,
   pal_name  = "Spectral",
   figsize   = c(8, 6)
-)  
+)
 }
 }

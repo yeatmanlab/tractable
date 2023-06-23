@@ -10,8 +10,8 @@ plot_gam_splines(
   df_tract,
   dwi_metric,
   covariates,
-  group.by = "group",
-  participant.id = "subjectID",
+  group_by = "group",
+  participant_id = "subjectID",
   out_dir
 )
 }
@@ -28,9 +28,9 @@ plot_gam_splines(
 not including the smoothing terms over nodes and the random effect due
 to subjectID.}
 
-\item{group.by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms}
 
-\item{participant.id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID}
 
 \item{out_dir}{directory in which to save plots}
 }
