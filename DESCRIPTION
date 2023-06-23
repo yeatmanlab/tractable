@@ -1,5 +1,5 @@
 Package: tractr
-Title: Generalized Additive Models for analyzing diffusion MRI tract profiles
+Title: Analyzing diffusion MRI tract profiles
 Version: 0.0.0.9000
 Authors@R:
     c(person(given = "Adam",
@@ -28,13 +28,12 @@ Authors@R:
            role = c("aut"),
            comment = c(ORCID = "XXX")))
 Author: Adam Richie-Halford [aut, cre],
-    Kelly Chang (aut)
-    Teresa Gomez (aut)
-    McKenzie Hagen (aut)
+    Kelly Chang (aut),
+    Teresa Gomez (aut),
+    McKenzie Hagen (aut),
     Ariel Rokem (aut)
 Maintainer: Adam Richie-Halford <richiehalford@gmail.com>
-Description: A toolbox for analyzing diffusion MRI tract profiles using
-    generalized additive models.
+Description: A toolbox for analyzing diffusion MRI tract profiles.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -58,5 +57,5 @@ Suggests:
     covr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/richford/tractr
-BugReports: https://github.com/richford/tractr/issues
+URL: https://github.com/yeatmanlab/tractr
+BugReports: https://github.com/yeatmanlab/tractr/issues
