@@ -1,12 +1,11 @@
-
-
 test_that("fit_gam runs as expected", {
 
  sarica <- read.afq.sarica()
  sarica$group <- factor(sarica$class)
  sarica$subjectID <- unclass(factor(sarica$subjectID))
 
- selected <- select_bundle(
+
+selected <- tractr::select_bundle(
     df_afq = sarica,
     tract = "Right Corticospinal",
     dwi_metric = "fa",
@@ -41,5 +40,18 @@ string_formula = 'fa ~ age + group + s(nodeID, by = group, k = 40) + s(subjectID
     bs = "re")'
 gam_fit <- expect_no_error(tractr::fit_gam(df_tract = df_tract,
                                            formula = string_formula))
+                                           })
 
+test_that("fit_gam runs as expected", {
+
+
+gam_fit <- tractr::fit_gam(df_tract = df_tract,
+                           target = "fa",
+                           formula = formula)
+
+
+new_data <- df_tract
+expect_no_error(
+    predict_with_gam(gam_fit, new_data)
+    )
                       })

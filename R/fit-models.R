@@ -214,6 +214,10 @@ fit_gam <- function(df_tract,
 }
 
 
+predict_with_gam <- function(gam_fit, new_data) {
+  mgcv::predict.bam(gam_fit, new_data)
+}
+
 save_gam_outputs <- function(gam_fit, out_dir, tract_name){
     utils::capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
@@ -236,3 +240,4 @@ save_gam_outputs <- function(gam_fit, out_dir, tract_name){
         )))
 
   }
+
