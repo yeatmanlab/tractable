@@ -53,7 +53,9 @@ gam_fit <- tractr::fit_gam(df_tract = df_tract,
 # Drop the FA column, because that's what we're predicting:
 new_data <- df_tract[, !(names(df_tract) %in% c("fa"))]
 
+
 expect_no_error(
     new_data <- predict_with_gam(gam_fit, new_data, "fa")
     )
-                      })
+expect_equal(dim(new_data), dim(df_tract))
+})
