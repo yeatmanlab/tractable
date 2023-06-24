@@ -6,9 +6,9 @@
 <!-- badges: start -->
 <!--insert CRAN status badge -->
 
-[![R-CMD-check](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/yeatmanlab/tractr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yeatmanlab/tractr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/richford/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractr?branch=main)
+coverage](https://codecov.io/gh/yeatmanlab/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/yeatmanlab/tractr?branch=main)
 
 <!-- badges: end -->
 
@@ -26,7 +26,7 @@ You can install the development version of tractr from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("richford/tractr")
+devtools::install_github("yeatmanlab/tractr")
 ```
 
 ## Example
