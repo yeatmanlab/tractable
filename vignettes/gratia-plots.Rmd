@@ -15,13 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette demonstrates XXX.
-
+This vignette demonstrates how a GAM model changes with increased flexibility.
 The data we will use here contains tract profiles from diffusion MRI
 measurements in a group of patients with Amyotrophic Lateral Sclerosis (ALS)
 and a group of matched controls [@Sarica2017].
 
-We start by loading the `tractr` library:
+We start by loading the `tractr` library and `gratia`, as well as `ggplot2`,
+which we will use to interpret the fitted model.
 
 ```{r setup}
 library(tractr)
@@ -40,78 +40,48 @@ sarica$group <- factor(sarica$class)
 sarica$subjectID <- unclass(factor(sarica$subjectID))
 ```
 
+We fit models with different levels of flexibility, encoded in different values
+of `k`:
 
 ```{r}
-gam_fit_4 <- tractr_single_bundle(df_afq = sarica,
-                                    tract = "Right Corticospinal",
-                                    participant_id = "subjectID",
-                                    group_by = "group",
-                                    covariates = c("age", "group"),
-                                    dwi_metric = "fa",
-                                    k = 4)
+
+k_values = c(4, 8, 16, 32)
+
+models = list()
+
+for (ii in seq_along(k_values)){
+   models[[ii]] <- tractr_single_bundle(df_afq = sarica,
+                                        tract = "Right Corticospinal",
+                                        participant_id = "subjectID",
+                                        group_by = "group",
+                                        covariates = c("age", "group"),
+                                        dwi_metric = "fa",
+                                        k = k_values[ii])
+
+}
 ```
 
-```{r}
-gam_fit_8 <- tractr_single_bundle(df_afq = sarica,
-                                    tract = "Right Corticospinal",
-                                    participant_id = "subjectID",
-                                    group_by = "group",
-                                    covariates = c("age", "group"),
-                                    dwi_metric = "fa",
-                                    k = 8)
-```
-
+And we plot the smooths, divided by group for each one of these levels:
 
 ```{r}
-gam_fit_16 <- tractr_single_bundle(df_afq = sarica,
-                                    tract = "Right Corticospinal",
-                                    participant_id = "subjectID",
-                                    group_by = "group",
-                                    covariates = c("age", "group"),
-                                    dwi_metric = "fa",
-                                    k = 16)
-```
 
+plots =list()
 
-```{r}
-sm_4 <- smooth_estimates(gam_fit_4) %>%
+for (ii in seq_along(k_values)){
+
+sm <- smooth_estimates(models[[ii]]) %>%
   gratia::add_confint()
 
-p_sm_4 <- sm_4 %>%
+plots[[ii]] <- sm %>%
       ggplot() +
-      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
+      geom_ribbon(aes(group=group, ymin = lower_ci, ymax = upper_ci, x = nodeID),
                   alpha = 0.2) +
-      geom_line(aes(x = nodeID, y = est))+
-  labs(y = "FA", title = "k=4")
-p_sm_4
+      geom_line(aes(group=group, color=group, x = nodeID, y = est))+
+  labs(y = "FA", title = sprintf("k=%d", k_values[ii]))
+
+}
+
+plots
 ```
-
-```{r}
-sm_8 <- smooth_estimates(gam_fit_8) %>%
-  gratia::add_confint()
-
-p_sm_8 <- sm_8 %>%
-      ggplot() +
-      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
-                  alpha = 0.2) +
-      geom_line(aes(x = nodeID, y = est)) +
-  labs(y = "FA", title = "k=8")
-
-p_sm_8
-```
-
-```{r}
-sm_16 <- smooth_estimates(gam_fit_16) %>%
-  gratia::add_confint()
-
-p_sm_16 <- sm_16 %>%
-      ggplot() +
-      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
-                  alpha = 0.2) +
-      geom_line(aes(x = nodeID, y = est))+
-  labs(y = "FA", title = "k=16")
-p_sm_16
-```
-
 
 ## References
