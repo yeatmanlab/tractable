@@ -59,18 +59,25 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #' }
 #'
 #' @param df_tract AFQ Dataframe of node metric values for single tract
-#' @param target The diffusion metric to model (e.g. "FA", "MD")
+#' @param target The diffusion metric to model (e.g. "FA", "MD"). If this is
+#'  set, `formula` must NOT be set.
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     If this is set, `formula` must NOT be set.
 #' @param smooth_terms Smoothing terms, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
+#'     If this is set, `formula` must NOT be set.
 #' @param group_by The grouping variable used to group nodeID smoothing terms
+#'     If this is set, `formula` must NOT be set.
 #' @param participant_id The name of the column that encodes participant ID
+#'     If this is set, `formula` must NOT be set.
 #' @param formula Optional explicit formula to use for the GAM. If provided,
 #'     this will override the dynamically generated formula build from the
-#'     target and covariate inputs. Default = NULL.
+#'     target and covariate inputs. Default = NULL. If this is set, all other
+#'     inputs that determine the formula must be set to NULL.
 #' @param k Dimension of the basis used to represent the node smoothing term,
-#'     If k = 'auto', this function will attempt to find the best value
+#'     If k = 'auto' (default), this function will attempt to find the best
+#'     value.
 #' @param family Distribution to use for the gam. Must be either 'gamma',
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
@@ -95,16 +102,44 @@ fit_gam <- function(df_tract,
                     target = NULL,
                     covariates = NULL,
                     smooth_terms = NULL,
-                    group_by = "group",
-                    participant_id = "subjectID",
+                    group_by = NULL,
+                    participant_id = NULL,
                     formula = NULL,
-                    k = 40,
+                    k = NULL,
                     family = "auto",
                     method="fREML",
                     ...) {
 
-  # XXX Check that target and formula are not both provided, because this
-  # could do something unexpected.
+  # Check that if formula is non-NULL, all the other formula-setting inputs
+  # are null
+  if (!is.null(formula)) {
+    if (!(is.null(target) &&
+          is.null(covariates) &&
+          is.null(smooth_terms) &&
+          is.null(group_by) &&
+          is.null(k))) {
+    stop(
+    "If `formula` is provided no other formula-setting input may be provided")
+    } else{
+      # If it's a string input, we'll cast it into a formula
+    if (is.character(formula) & length(formula) == 1) {
+      formula <- as.formula(formula)
+    }
+    # Get the target from the formula for use below
+    target <- terms(formula)[[2]]
+  }}
+
+  # Set other defaults
+  if (is.null(group_by)) {
+    group_by <- "group"
+  }
+  if (is.null(participant_id)) {
+    participant_id <- "subjectID"
+  }
+
+  if (is.null(k)) {
+    k <- "auto"
+  }
 
   # Set link family
   if (is.character(family) | is.null(family)) {
