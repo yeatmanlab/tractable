@@ -26,6 +26,7 @@ We start by loading the `tractr` library:
 ```{r setup}
 library(tractr)
 library(gratia)
+library(ggplot2)
 ```
 
 Next, we will use a function that is included in `tractr` to read this dataset
@@ -73,25 +74,43 @@ gam_fit_16 <- tractr_single_bundle(df_afq = sarica,
 
 
 ```{r}
-gratia::draw(gam_fit_4)
-```
+sm_4 <- smooth_estimates(gam_fit_4) %>%
+  gratia::add_confint()
 
+p_sm_4 <- sm_4 %>%
+      ggplot() +
+      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
+                  alpha = 0.2) +
+      geom_line(aes(x = nodeID, y = est))+
+  labs(y = "FA", title = "k=4")
+p_sm_4
+```
 
 ```{r}
-gratia::draw(gam_fit_8)
+sm_8 <- smooth_estimates(gam_fit_8) %>%
+  gratia::add_confint()
+
+p_sm_8 <- sm_8 %>%
+      ggplot() +
+      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
+                  alpha = 0.2) +
+      geom_line(aes(x = nodeID, y = est)) +
+  labs(y = "FA", title = "k=8")
+
+p_sm_8
 ```
 
 ```{r}
-gratia::draw(gam_fit_16)
-```
+sm_16 <- smooth_estimates(gam_fit_16) %>%
+  gratia::add_confint()
 
-
-```
-
-p1 <- draw(gam_fit_4, select = "s(nodeID)")
-p2 <- draw(gam_fit_8, select = "s(nodeID)")
-p3 <- draw(gam_fit_16, select = "s(nodeID)")
-p1 + p2 + p3 + patchwork::plot_layout(ncol = 3)
+p_sm_16 <- sm_16 %>%
+      ggplot() +
+      geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, x = nodeID),
+                  alpha = 0.2) +
+      geom_line(aes(x = nodeID, y = est))+
+  labs(y = "FA", title = "k=16")
+p_sm_16
 ```
 
 
