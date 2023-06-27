@@ -7,8 +7,8 @@
 #' @param additional_terms Additional terms to add to the model formula, such
 #'     as additional covariates or additional smooth terms specified using the
 #'     "s(covariate, k=8)" for example.
-#' @param group.by The grouping variable used to group nodeID smoothing terms
-#' @param participant.id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
+#' @param participant_id The name of the column that encodes participant ID
 #' @param k Dimension of the basis used to represent the node smoothing term
 #'
 #' @return A GAM formula
@@ -21,16 +21,16 @@
 #' formula <- build_formula(target = "dki_md",
 #'                          covariates = c("group", "sex", "s(age, by=sex)"),
 #'                          k = 32)
-build_formula <- function(target, covariates, additional_terms = NULL, group.by = "group", participant.id = "subjectID", k) {
+build_formula <- function(target, covariates, additional_terms = NULL, group_by = "group", participant_id = "subjectID", k) {
   if (!is.null(covariates)) {
     vars <- paste0(covariates, collapse = "+")
   }
-  if (!is.null(group.by)) {
-    node_smooth <- paste0("s(nodeID, by = ", group.by, ", k=", k, ")")
+  if (!is.null(group_by)) {
+    node_smooth <- paste0("s(nodeID, by = ", group_by, ", k=", k, ")")
   } else {
     node_smooth <- paste0("s(nodeID, k=", k, ")")
   }
-  subject_random_effect <- paste0("s(", participant.id, ", bs = \"re\")")
+  subject_random_effect <- paste0("s(", participant_id, ", bs = \"re\")")
   if (is.null(covariates)) {
     after_tilde <- paste0(list(node_smooth, subject_random_effect), collapse = "+")
   } else {
@@ -65,8 +65,8 @@ build_formula <- function(target, covariates, additional_terms = NULL, group.by 
 #'     the smoothing terms over nodes and the random effect due to subjectID.
 #' @param additional_terms Smoothing terms, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#' @param group.by The grouping variable used to group nodeID smoothing terms
-#' @param participant.id The name of the column that encodes participant ID
+#' @param group_by The grouping variable used to group nodeID smoothing terms
+#' @param participant_id The name of the column that encodes participant ID
 #' @param formula Optional explicit formula to use for the GAM. If provided,
 #'     this will override the dynamically generated formula build from the
 #'     target and covariate inputs. Default = NULL.
@@ -97,8 +97,8 @@ fit_gam <- function(df_tract,
                     target,
                     covariates = NULL,
                     additional_terms = NULL,
-                    group.by = "group",
-                    participant.id = "subjectID",
+                    group_by = "group",
+                    participant_id = "subjectID",
                     formula = NULL,
                     k = 40,
                     family = "auto",
@@ -138,8 +138,8 @@ fit_gam <- function(df_tract,
         formula <- build_formula(target = target,
                                  covariates = covariates,
                                  additional_terms = additional_terms,
-                                 group.by = group.by,
-                                 participant.id = participant.id,
+                                 group_by = group_by,
+                                 participant_id = participant_id,
                                  k = k.model)
 
         # Fit the gam
@@ -160,8 +160,8 @@ fit_gam <- function(df_tract,
     formula <- build_formula(target = target,
                              covariates = covariates,
                              additional_terms = additional_terms,
-                             group.by = group.by,
-                             participant.id = participant.id,
+                             group_by = group_by,
+                             participant_id = participant_id,
                              k = k.model)
   }
 
