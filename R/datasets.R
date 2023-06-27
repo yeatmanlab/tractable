@@ -25,7 +25,7 @@ parse.s3.uri <- function(uri) {
 #' Create a merged AFQ/phenotype dataframe
 #'
 #' @param nodes_csv path to a nodes file
-#' @param pheno_csv path to a phenotypic file
+#' @param pheno_csv path to a phenotypic file, leave NULL to return an "unsupervised" AFQ dataset
 #' @param index specification of the column used for merging
 #' @param index.nodes specification of the column used for merging
 #' @param index.pheno specification of the column used for merging
@@ -41,7 +41,7 @@ parse.s3.uri <- function(uri) {
 #'   df_afq <- read.afq.files(nodes_csv = "a/path/to/nodes.csv",
 #'                            pheno_csv = "a/path/to/pheno.csv")
 #' }
-read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.nodes = index, index.pheno = index, dwi_metrics = NULL, factor_cols = NULL, pheno_cols = NULL, ...) {
+read.afq.files <- function(nodes_csv, pheno_csv = NULL, index = "subjectID", index.nodes = index, index.pheno = index, dwi_metrics = NULL, factor_cols = NULL, pheno_cols = NULL, ...) {
   if (grepl("^s3://", nodes_csv)) {
     # Read from S3
     uri <- parse.s3.uri(nodes_csv)
@@ -64,57 +64,63 @@ read.afq.files <- function(nodes_csv, pheno_csv, index = "subjectID", index.node
     nodes_df <- dplyr::select(nodes_df, dplyr::any_of(node_cols))
   }
 
-  # Treat some pheno columns as factors
-  if (is.null(factor_cols)) {
-    colClasses <- NA
-  } else {
-    colClasses <- rep("factor", length(factor_cols))
-    names(colClasses) <- factor_cols
-  }
-
-  # Determine separator from file suffix
-  if (grepl("\\.tsv$", pheno_csv)) {
-    sep <- "\t"
-  } else {
-    sep <- ","
-  }
-
-  if (grepl("^s3://", pheno_csv)) {
-    # Read from S3
-    uri <- parse.s3.uri(pheno_csv)
-    pheno_df <- aws.s3::s3read_using(FUN=utils::read.csv,
-                                     bucket = uri[["bucket"]],
-                                     object = uri[["object"]],
-                                     sep = sep,
-                                     ... = ...)
-  } else {
-    # Read from local or URL
-    pheno_df <- utils::read.csv(pheno_csv,
-                         check.names = FALSE,
-                         colClasses=colClasses,
-                         sep = sep,
-                         ... = ...)
-  }
-
-  # Select only the user supplied pheno columns
-  if (!is.null(pheno_cols)) {
-    pheno_df <- dplyr::select(pheno_df, unique(c(index.pheno, pheno_cols)))
-  }
-
-  # Before merging, add "sub-" prefix to participant IDs if not already there
-  pheno_df[[index.pheno]] <- trimws(as.character(pheno_df[[index.pheno]]))
+  # Add "sub-" prefix to participant IDs if not already there
   nodes_df[[index.nodes]] <- trimws(as.character(nodes_df[[index.nodes]]))
-
-  pheno_df[[index.pheno]] <- ifelse(grepl("^sub-", pheno_df[[index.pheno]]),
-                                    pheno_df[[index.pheno]],
-                                    paste0("sub-", pheno_df[[index.pheno]]))
   nodes_df[[index.nodes]] <- ifelse(grepl("^sub-", nodes_df[[index.nodes]]),
                                     nodes_df[[index.nodes]],
                                     paste0("sub-", nodes_df[[index.nodes]]))
 
-  # Merge and return
-  merged_df <- merge(nodes_df, pheno_df, by.x = index.nodes, by.y = index.pheno, incomparables = NA)
-  return(merged_df)
+  if (!is.null(pheno_csv)) {
+    # Treat some pheno columns as factors
+    if (is.null(factor_cols)) {
+      colClasses <- NA
+    } else {
+      colClasses <- rep("factor", length(factor_cols))
+      names(colClasses) <- factor_cols
+    }
+
+    # Determine separator from file suffix
+    if (grepl("\\.tsv$", pheno_csv)) {
+      sep <- "\t"
+    } else {
+      sep <- ","
+    }
+
+    if (grepl("^s3://", pheno_csv)) {
+      # Read from S3
+      uri <- parse.s3.uri(pheno_csv)
+      pheno_df <- aws.s3::s3read_using(FUN=utils::read.csv,
+                                      bucket = uri[["bucket"]],
+                                      object = uri[["object"]],
+                                      sep = sep,
+                                      ... = ...)
+    } else {
+      # Read from local or URL
+      pheno_df <- utils::read.csv(pheno_csv,
+                          check.names = FALSE,
+                          colClasses=colClasses,
+                          sep = sep,
+                          ... = ...)
+    }
+
+    # Select only the user supplied pheno columns
+    if (!is.null(pheno_cols)) {
+      pheno_df <- dplyr::select(pheno_df, unique(c(index.pheno, pheno_cols)))
+    }
+
+    # Add "sub-" prefix to participant IDs if not already there
+    pheno_df[[index.pheno]] <- trimws(as.character(pheno_df[[index.pheno]]))
+    pheno_df[[index.pheno]] <- ifelse(grepl("^sub-", pheno_df[[index.pheno]]),
+                                      pheno_df[[index.pheno]],
+                                      paste0("sub-", pheno_df[[index.pheno]]))
+
+    # Merge pheno is provided
+    merged_df <- merge(nodes_df, pheno_df, by.x = index.nodes, by.y = index.pheno, incomparables = NA)
+    return(merged_df)
+  }
+
+  # If we get here, then we are in the unsupervised case so return just the nodes_df.
+  return(nodes_df)
 }
 
 #' Load tract profiles from Sarica et al.
