@@ -11,7 +11,7 @@ tractr_single_bundle(
   participant_id = "subjectID",
   group_by = "group",
   covariates = c(group_by),
-  smooth_terms = NULL,
+  additional_terms = NULL,
   k = "auto",
   family = "auto",
   ...
@@ -33,7 +33,7 @@ using read.afq.data and the additional arguments in ...}
 not including the smoothing terms over nodes and the random effect due
 to subjectID.}
 
-\item{smooth_terms}{Smoothing terms, not including
+\item{additional_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term,

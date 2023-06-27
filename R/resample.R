@@ -131,8 +131,9 @@ bootstrap_df <- function(input_df,
 #'     will shuffle without replacement.
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#' @param smooth_terms Smoothing terms, not including
-#'     the smoothing terms over nodes and the random effect due to subjectID.
+#' @param additional_terms Additional terms to add to the model formula, such
+#'     as additional covariates or additional smooth terms specified using the
+#'     "s(covariate, k=8)" for example.
 #' @param k Dimension of the basis used to represent the node smoothing term
 #' @param family Distribution to use for the gam. Must be 'gamma' or 'beta'
 #' @param formula Optional explicit formula to use for the GAM. If provided,
@@ -165,7 +166,7 @@ sampling_test <- function(df_tract,
                           participant_id = "subjectID",
                           sample_uniform = FALSE,
                           covariates = NULL,
-                          smooth_terms = NULL,
+                          additional_terms = NULL,
                           k = NULL,
                           family = NULL,
                           formula = NULL,
@@ -201,7 +202,7 @@ sampling_test <- function(df_tract,
     gam_shuffle <- fit_gam(df_tract = df_shuffle,
                            target = dwi_metric,
                            covariates = covariates,
-                           smooth_terms = smooth_terms,
+                           additional_terms = additional_terms,
                            group_by = group_by,
                            participant_id = participant_id,
                            formula = formula,

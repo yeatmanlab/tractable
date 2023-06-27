@@ -8,7 +8,7 @@ fit_gam(
   df_tract,
   target = NULL,
   covariates = NULL,
-  smooth_terms = NULL,
+  additional_terms = NULL,
   group_by = NULL,
   participant_id = NULL,
   formula = NULL,
@@ -28,7 +28,7 @@ set, \code{formula} must NOT be set.}
 the smoothing terms over nodes and the random effect due to subjectID.
 If this is set, \code{formula} must NOT be set.}
 
-\item{smooth_terms}{Smoothing terms, not including
+\item{additional_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.
 If this is set, \code{formula} must NOT be set.}
 
