@@ -26,7 +26,6 @@ test_that("read.afq.files returns an unsupervised dataset when pheno_csv is NULL
   url.nodes <- "https://github.com/yeatmanlab/Sarica_2017/raw/gh-pages/data/nodes.csv"
   df <- read.afq.files(nodes_csv = url.nodes,
                        dwi_metrics = c("fa", "md"),
-                       factor_cols = c("class", "gender"),
                        pheno_cols = c("age", "class", "gender"))
 
   expect(! "age" %in% colnames(df))
