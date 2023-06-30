@@ -9,3 +9,4 @@ man/*
 .httr-oauth
 .DS_Store
 inst/doc
+docs

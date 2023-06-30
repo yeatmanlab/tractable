@@ -1,4 +1,4 @@
-test_that("gams run as expected", {
+test_that("tractr_single_bundle runs as expected", {
  sarica <- read.afq.sarica()
  sarica$group <- factor(sarica$class)
  sarica$subjectID <- unclass(factor(sarica$subjectID))

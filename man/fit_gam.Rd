@@ -9,10 +9,10 @@ fit_gam(
   target = NULL,
   covariates = NULL,
   smooth_terms = NULL,
-  group_by = "group",
-  participant_id = "subjectID",
+  group_by = NULL,
+  participant_id = NULL,
   formula = NULL,
-  k = 40,
+  k = NULL,
   family = "auto",
   method = "fREML",
   ...
@@ -21,24 +21,31 @@ fit_gam(
 \arguments{
 \item{df_tract}{AFQ Dataframe of node metric values for single tract}
 
-\item{target}{The diffusion metric to model (e.g. "FA", "MD")}
+\item{target}{The diffusion metric to model (e.g. "FA", "MD"). If this is
+set, \code{formula} must NOT be set.}
 
 \item{covariates}{List of strings of GAM covariates, not including
-the smoothing terms over nodes and the random effect due to subjectID.}
+the smoothing terms over nodes and the random effect due to subjectID.
+If this is set, \code{formula} must NOT be set.}
 
 \item{smooth_terms}{Smoothing terms, not including
-the smoothing terms over nodes and the random effect due to subjectID.}
+the smoothing terms over nodes and the random effect due to subjectID.
+If this is set, \code{formula} must NOT be set.}
 
-\item{group_by}{The grouping variable used to group nodeID smoothing terms}
+\item{group_by}{The grouping variable used to group nodeID smoothing terms
+If this is set, \code{formula} must NOT be set.}
 
-\item{participant_id}{The name of the column that encodes participant ID}
+\item{participant_id}{The name of the column that encodes participant ID
+If this is set, \code{formula} must NOT be set.}
 
 \item{formula}{Optional explicit formula to use for the GAM. If provided,
 this will override the dynamically generated formula build from the
-target and covariate inputs. Default = NULL.}
+target and covariate inputs. Default = NULL. If this is set, all other
+inputs that determine the formula must be set to NULL.}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term,
-If k = 'auto', this function will attempt to find the best value}
+If k = 'auto' (default), this function will attempt to find the best
+value.}
 
 \item{family}{Distribution to use for the gam. Must be either 'gamma',
 'beta', or 'auto'. If 'auto', this function will select the best fit
