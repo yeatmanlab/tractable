@@ -17,7 +17,7 @@ test_that("fit_gam runs as expected", {
 df_tract <- selected$df_tract
 tract_names <- selected$tract_names
 
-formula <- tractr::build_formula(
+formula <- tractable::build_formula(
     "fa",
     covariates = c("age", "group"),
     group_by = "group",
@@ -25,21 +25,21 @@ formula <- tractr::build_formula(
     k = 40)
 
 # One and only one of "target" and "formula" should be set to non-NULL
-gam_fit <- expect_error(tractr::fit_gam(df_tract = df_tract,
+gam_fit <- expect_error(tractable::fit_gam(df_tract = df_tract,
                                         target = NULL,
                                         formula = NULL))
 
-gam_fit <- expect_error(tractr::fit_gam(df_tract = df_tract,
+gam_fit <- expect_error(tractable::fit_gam(df_tract = df_tract,
                                         target = "fa",
                                         formula = formula))
 
-gam_fit <- expect_no_error(tractr::fit_gam(df_tract = df_tract,
+gam_fit <- expect_no_error(tractable::fit_gam(df_tract = df_tract,
                                            formula = formula))
 
 # Check that formula can be passed as a string
 string_formula = 'fa ~ age + group + s(nodeID, by = group, k = 40) + s(subjectID,
     bs = "re")'
-gam_fit <- expect_no_error(tractr::fit_gam(df_tract = df_tract,
+gam_fit <- expect_no_error(tractable::fit_gam(df_tract = df_tract,
                                            formula = string_formula))
 
                       })

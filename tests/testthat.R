@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(tractr)
+library(tractable)
 
-test_check("tractr")
+test_check("tractable")
