@@ -21,3 +21,14 @@ test_that("read.afq.hbn loads the HBN dataset", {
   expect_equal(ncol(df_hbn), 7)
   expect_equal(length(unique(df_hbn$subjectID)), 1)
 })
+
+test_that("read.afq.files returns an unsupervised dataset when pheno_csv is NULL", {
+  url.nodes <- "https://github.com/yeatmanlab/Sarica_2017/raw/gh-pages/data/nodes.csv"
+  df <- read.afq.files(nodes_csv = url.nodes,
+                       dwi_metrics = c("fa", "md"),
+                       pheno_cols = c("age", "class", "gender"))
+
+  expect(! "age" %in% colnames(df))
+  expect(! "class" %in% colnames(df))
+  expect(! "gender" %in% colnames(df))
+})
