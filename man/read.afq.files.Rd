@@ -6,7 +6,7 @@
 \usage{
 read.afq.files(
   nodes_csv,
-  pheno_csv,
+  pheno_csv = NULL,
   index = "subjectID",
   index.nodes = index,
   index.pheno = index,
@@ -19,7 +19,7 @@ read.afq.files(
 \arguments{
 \item{nodes_csv}{path to a nodes file}
 
-\item{pheno_csv}{path to a phenotypic file}
+\item{pheno_csv}{path to a phenotypic file, leave NULL to return an "unsupervised" AFQ dataset}
 
 \item{index}{specification of the column used for merging}
 
