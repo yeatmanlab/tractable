@@ -91,12 +91,12 @@ effect observed in CST is rather specific to this bundle.
 
 ```{r}
 gam_fit_slf <- tractable_single_bundle(df_afq = sarica,
-                                    tract = "Right SLF",
-                                    participant_id = "subjectID",
-                                    group_by = "group",
-                                    covariates = c("age","group"),
-                                    dwi_metric = "fa",
-                                    k = "auto")
+                                       tract = "Right SLF",
+                                       participant_id = "subjectID",
+                                       group_by = "group",
+                                       covariates = c("age","group"),
+                                       dwi_metric = "fa",
+                                       k = "auto")
 
 summary(gam_fit_slf)
 ```
