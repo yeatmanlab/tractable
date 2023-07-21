@@ -4,8 +4,9 @@
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
 #'     This list can also include smoothing terms.
-#' @param smooth_terms Smoothing terms, not including
-#'     the smoothing terms over nodes and the random effect due to subjectID.
+#' @param additional_terms Additional terms to add to the model formula, such
+#'     as additional covariates or additional smooth terms specified using the
+#'     "s(covariate, k=8)" for example.
 #' @param group_by The grouping variable used to group nodeID smoothing terms
 #' @param participant_id The name of the column that encodes participant ID
 #' @param k Dimension of the basis used to represent the node smoothing term
@@ -20,7 +21,7 @@
 #' formula <- build_formula(target = "dki_md",
 #'                          covariates = c("group", "sex", "s(age, by=sex)"),
 #'                          k = 32)
-build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "group", participant_id = "subjectID", k) {
+build_formula <- function(target, covariates, additional_terms = NULL, group_by = "group", participant_id = "subjectID", k) {
   if (!is.null(covariates)) {
     vars <- paste0(covariates, collapse = "+")
   }
@@ -35,8 +36,8 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
   } else {
     after_tilde <- paste0(list(vars, node_smooth, subject_random_effect), collapse = "+")
   }
-  if (!is.null(smooth_terms)) {
-    after_tilde <- paste0(list(after_tilde, smooth_terms), collapse = "+")
+  if (!is.null(additional_terms)) {
+    after_tilde <- paste0(list(after_tilde, additional_terms), collapse = "+")
   }
   dyn_string <- paste0(target, " ~ ", after_tilde)
   formula = stats::as.formula(dyn_string)
@@ -59,30 +60,24 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #' }
 #'
 #' @param df_tract AFQ Dataframe of node metric values for single tract
-#' @param target The diffusion metric to model (e.g. "FA", "MD"). If this is
-#'  set, `formula` must NOT be set.
+#' @param target The diffusion metric to model (e.g. "FA", "MD")
 #' @param covariates List of strings of GAM covariates, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#'     If this is set, `formula` must NOT be set.
-#' @param smooth_terms Smoothing terms, not including
+#' @param additional_terms Smoothing terms, not including
 #'     the smoothing terms over nodes and the random effect due to subjectID.
-#'     If this is set, `formula` must NOT be set.
 #' @param group_by The grouping variable used to group nodeID smoothing terms
-#'     If this is set, `formula` must NOT be set.
 #' @param participant_id The name of the column that encodes participant ID
-#'     If this is set, `formula` must NOT be set.
 #' @param formula Optional explicit formula to use for the GAM. If provided,
 #'     this will override the dynamically generated formula build from the
-#'     target and covariate inputs. Default = NULL. If this is set, all other
-#'     inputs that determine the formula must be set to NULL.
+#'     target and covariate inputs. Default = NULL.
 #' @param k Dimension of the basis used to represent the node smoothing term,
-#'     If k = 'auto' (default), this function will attempt to find the best
-#'     value.
+#'     If k = 'auto', this function will attempt to find the best value
 #' @param family Distribution to use for the gam. Must be either 'gamma',
 #'     'beta', or 'auto'. If 'auto', this function will select the best fit
 #'     between beta and gamma distributions.
-#' @param method String, fitting method passed to mgcv::bam
-#' @param ... Further keyword arguments passed to mgcv::bam
+#' @param tract_name Name of the tract, used only for output file names
+#' @param out_dir Directory in which to save gam stats
+#' @param save_output Boolean flag to save gam stat files
 #'
 #' @return Fitted GAM model
 #' @export
@@ -99,48 +94,17 @@ build_formula <- function(target, covariates, smooth_terms = NULL, group_by = "g
 #'                    k = "auto")
 #' }
 fit_gam <- function(df_tract,
-                    target = NULL,
+                    target,
                     covariates = NULL,
-                    smooth_terms = NULL,
-                    group_by = NULL,
-                    participant_id = NULL,
+                    additional_terms = NULL,
+                    group_by = "group",
+                    participant_id = "subjectID",
                     formula = NULL,
-                    k = NULL,
+                    k = 40,
                     family = "auto",
-                    method="fREML",
-                    ...) {
-
-  # Check that if formula is non-NULL, all the other formula-setting inputs
-  # are null
-  if (!is.null(formula)) {
-    if (!(is.null(target) &&
-          is.null(covariates) &&
-          is.null(smooth_terms) &&
-          is.null(group_by) &&
-          is.null(k))) {
-    stop(
-    "If `formula` is provided no other formula-setting input may be provided")
-    } else{
-      # If it's a string input, we'll cast it into a formula
-    if (is.character(formula) & length(formula) == 1) {
-      formula <- as.formula(formula)
-    }
-    # Get the target from the formula for use below
-    target <- terms(formula)[[2]]
-  }}
-
-  # Set other defaults
-  if (is.null(group_by)) {
-    group_by <- "group"
-  }
-  if (is.null(participant_id)) {
-    participant_id <- "subjectID"
-  }
-
-  if (is.null(k)) {
-    k <- "auto"
-  }
-
+                    tract_name = "",
+                    out_dir = ".",
+                    save_output = FALSE) {
   # Set link family
   if (is.character(family) | is.null(family)) {
     if (is.null(family) | tolower(family) == "auto") {
@@ -173,7 +137,7 @@ fit_gam <- function(df_tract,
         k.model <- k.model * 2
         formula <- build_formula(target = target,
                                  covariates = covariates,
-                                 smooth_terms = smooth_terms,
+                                 additional_terms = additional_terms,
                                  group_by = group_by,
                                  participant_id = participant_id,
                                  k = k.model)
@@ -183,8 +147,7 @@ fit_gam <- function(df_tract,
           formula,
           data = df_tract,
           family = linkfamily,
-          method = method,
-          ... = ...
+          method = "REML"
         )
 
         k.check <- mgcv::k.check(gam_fit)
@@ -196,7 +159,7 @@ fit_gam <- function(df_tract,
     }
     formula <- build_formula(target = target,
                              covariates = covariates,
-                             smooth_terms = smooth_terms,
+                             additional_terms = additional_terms,
                              group_by = group_by,
                              participant_id = participant_id,
                              k = k.model)
@@ -204,17 +167,13 @@ fit_gam <- function(df_tract,
 
   # Fit the gam
   gam_fit <- mgcv::bam(
-          formula,
-          data = df_tract,
-          family = linkfamily,
-          method = method,
-          ... = ...
+    formula,
+    data = df_tract,
+    family = linkfamily,
+    method = "REML"
   )
-  return(gam_fit)
-}
 
-
-save_gam_outputs <- function(gam_fit, out_dir, tract_name){
+  if (save_output) {
     utils::capture.output(
       mgcv::gam.check(gam_fit, rep = 500),
       file = file.path(out_dir, paste0(
@@ -236,3 +195,6 @@ save_gam_outputs <- function(gam_fit, out_dir, tract_name){
         )))
 
   }
+
+  return(gam_fit)
+}

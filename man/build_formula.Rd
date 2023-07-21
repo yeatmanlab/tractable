@@ -7,7 +7,7 @@
 build_formula(
   target,
   covariates,
-  smooth_terms = NULL,
+  additional_terms = NULL,
   group_by = "group",
   participant_id = "subjectID",
   k
@@ -20,7 +20,7 @@ build_formula(
 the smoothing terms over nodes and the random effect due to subjectID.
 This list can also include smoothing terms.}
 
-\item{smooth_terms}{Smoothing terms, not including
+\item{additional_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
 \item{group_by}{The grouping variable used to group nodeID smoothing terms}

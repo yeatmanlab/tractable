@@ -9,8 +9,9 @@
 #' @param covariates List of strings of GAM covariates,
 #'     not including the smoothing terms over nodes and the random effect due
 #'     to subjectID.
-#' @param smooth_terms Smoothing terms, not including
-#'     the smoothing terms over nodes and the random effect due to subjectID.
+#' @param additional_terms Additional terms to add to the model formula, such
+#'     as additional covariates or additional smooth terms specified using the
+#'     "s(covariate, k=8)" for example.
 #' @param k Dimension of the basis used to represent the node smoothing term,
 #'     If k = 'auto', this function will attempt to find the best value
 #' @param family Distribution to use for the gam. Must be either 'gamma',
@@ -36,7 +37,7 @@ tractr_single_bundle <- function(df_afq,
                                  participant_id = "subjectID",
                                  group_by = "group",
                                  covariates = c(group_by),
-                                 smooth_terms = NULL,
+                                 additional_terms = NULL,
                                  k = "auto",
                                  family = "auto",
                                  ...) {
@@ -53,7 +54,7 @@ tractr_single_bundle <- function(df_afq,
   gam_fit <- fit_gam(df_tract = df_tract,
                      target = dwi_metric,
                      covariates = covariates,
-                     smooth_terms = smooth_terms,
+                     additional_terms = additional_terms,
                      group_by = group_by,
                      participant_id = participant_id,
                      k = k,

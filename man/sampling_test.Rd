@@ -13,7 +13,7 @@ sampling_test(
   participant_id = "subjectID",
   sample_uniform = FALSE,
   covariates = NULL,
-  smooth_terms = NULL,
+  additional_terms = NULL,
   k = NULL,
   family = NULL,
   formula = NULL,
@@ -42,7 +42,7 @@ will shuffle without replacement.}
 \item{covariates}{List of strings of GAM covariates, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
-\item{smooth_terms}{Smoothing terms, not including
+\item{additional_terms}{Smoothing terms, not including
 the smoothing terms over nodes and the random effect due to subjectID.}
 
 \item{k}{Dimension of the basis used to represent the node smoothing term}
