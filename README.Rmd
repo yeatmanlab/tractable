@@ -13,27 +13,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-# tractr <img src="man/figures/tractr-logo.svg" align="right" height="139"/>
+# tractable <img src="man/figures/tractable-logo.svg" align="right" height="139"/>
 
 <!-- badges: start -->
 
 <!--insert CRAN status badge -->
 
-[![R-CMD-check](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/richford/tractr/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/richford/tractr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractr?branch=main)
+[![R-CMD-check](https://github.com/richford/tractable/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/richford/tractable/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/richford/tractable/branch/main/graph/badge.svg)](https://app.codecov.io/gh/richford/tractable?branch=main)
 
 <!-- badges: end -->
 
 ## Overview
 
-tractr contains functions to analyze diffusion MRI (dMRI) tract profiles using generalized additive models. It operates on outputs from the AFQ software ecosystem and tests for differences between two phenotypic groups along the length of a specified white matter tract.
+tractable contains functions to analyze diffusion MRI (dMRI) tract profiles using generalized additive models. It operates on outputs from the AFQ software ecosystem and tests for differences between two phenotypic groups along the length of a specified white matter tract.
 
 ## Installation
 
-You can install the development version of tractr from [GitHub](https://github.com/) with:
+You can install the development version of tractable from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("richford/tractr")
+devtools::install_github("richford/tractable")
 ```
 
 ## Example
@@ -41,10 +41,10 @@ devtools::install_github("richford/tractr")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(tractr)
+library(tractable)
 ## basic example code
 ```
 
 ## Code of Conduct
 
-Please note that the tractr project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the tractable project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
