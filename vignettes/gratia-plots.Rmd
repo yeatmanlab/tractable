@@ -1,8 +1,8 @@
 ---
-title: "Using gratia for plotting"
+title: "Changing model flexibility"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using gratia for plotting}
+  %\VignetteIndexEntry{Changing model flexibility}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
