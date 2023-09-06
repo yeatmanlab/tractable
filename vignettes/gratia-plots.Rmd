@@ -86,4 +86,13 @@ gratia::draw(gam_fit_16)
 ```
 
 
+```
+
+p1 <- draw(gam_fit_4, select = "s(nodeID)")
+p2 <- draw(gam_fit_8, select = "s(nodeID)")
+p3 <- draw(gam_fit_16, select = "s(nodeID)")
+p1 + p2 + p3 + patchwork::plot_layout(ncol = 3)
+```
+
+
 ## References
