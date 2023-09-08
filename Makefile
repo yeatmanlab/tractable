@@ -11,7 +11,7 @@ docs:
 	Rscript -e "devtools::document()"
 
 examples:
-	Rscript -e "devtools::build_rmd('vignettes/tractr-single-bundle.Rmd')"
+	Rscript -e "devtools::build_rmd('vignettes/tractable-single-bundle.Rmd')"
 	Rscript -e "devtools::build_rmd('vignettes/changing-k.Rmd')"
 
 clean:
