@@ -1,0 +1,301 @@
+---
+title: "AFQ-GAMS-Tutorial"
+author: "Jason Yeatman"
+date: "2024-03-30"
+output: html_document
+---
+
+## GAMs Tutorial
+
+```{r setup}
+library(dplyr)
+library(mgcv)
+library(gratia)
+library(ggplot2)
+
+```
+
+This vignette walks through using the mgcv package to fit GAMs on tract profile 
+data. 
+
+### Load Data
+
+First we'll pull the Sarica data and merge nodes.csv (diffusion data) 
+with subjects.csv (participant meta data)
+
+```{r, warning=FALSE, message=FALSE}
+
+df <- read.csv('https://raw.githubusercontent.com/yeatmanlab/Sarica_2017/gh-pages/data/nodes.csv')
+df <- inner_join(df, read.csv('https://raw.githubusercontent.com/yeatmanlab/Sarica_2017/gh-pages/data/subjects.csv'))
+mutate(df, class = factor(class), subjectID = factor(subjectID))-> df
+
+# Let's only look at the left CST
+df <- df %>%
+  filter(tractID == 'Left Corticospinal') %>% 
+  mutate( class = factor(class), subjectID = factor(subjectID))
+
+```
+
+### GAMs modeling group differences in tract profiles 
+
+#### Baseline model
+
+Our first model will fit a simple GAM that fits different smoothers across the 
+two diagnosis groups and also adds a random effect of subejct. 
+
+```{r, message=FALSE, warning=FALSE}
+# Fit a simple GAM with a random effect of subject and smoothers that 
+# differ by class (control or ALS)
+g1 <- gam(md ~ s(nodeID,by = class, bs='fs') + s(subjectID, bs= 're'), data=df)
+```
+
+We can then generate estimates of our smooth terms and plot them to explore
+group differences. 
+
+```{r, message=FALSE, warning=FALSE}
+# Get smooth estimates
+dfs <- smooth_estimates(g1) %>% add_confint(coverage=.68)
+
+# Remove random effects and plot
+filter(dfs, type != 'Random effect') %>%
+ggplot(aes(x=nodeID,y=est)) +
+  geom_line(aes(color=class))  +
+  geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci,fill=class),alpha = 0.2 )+
+  theme_bw()
+```
+
+We can also visualize the smooth estimates 
+for each participant and plot to understand how smoothing happens
+over the nodes
+
+```{r, message=FALSE, warning=FALSE}
+
+
+# set up list of subjects (three with ALS and three without)
+subs_als = (df %>% 
+              filter(class=='ALS') %>% 
+              dplyr::select(subjectID) %>% 
+              unique())$subjectID[1:3]
+
+subs_control = (df %>% 
+              filter(class!='ALS') %>% 
+              dplyr::select(subjectID) %>% 
+              unique())$subjectID[1:3]
+
+subs = append(subs_als,subs_control)
+
+# generate data frame with information about subjects diagnosis
+class_df = df %>% select(subjectID, class) %>% unique()
+
+
+dfs %>% 
+  filter(type!='Random effect') %>% 
+  rename(mean_est = est,
+         mean_low = lower_ci,
+         mean_high = upper_ci) %>% 
+  select(mean_est,mean_low, mean_high, nodeID,class)%>% 
+  inner_join(dfs %>%
+               filter(smooth=='s(subjectID)') %>%
+               select(est,lower_ci, upper_ci,subjectID) %>% 
+              inner_join(class_df, by = 'subjectID'),
+             by=c('class')) %>%
+  mutate(est = est+mean_est,
+         lower_ci = mean_low + lower_ci,
+         upper_ci = mean_high + upper_ci)%>%
+  filter(subjectID %in% subs)%>%
+ggplot(aes(x=nodeID,y=est)) +
+  geom_line(aes(color=class))  +
+  geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci,fill=class),alpha = 0.2 )+
+  facet_grid(.~subjectID)+
+  theme_bw()
+
+```
+
+We combine the smooth term over the nodes with subject specific smoothers and plot
+estimated subject level smooth terms. We can see that for each group,
+there is a different shape to the smoother (s(nodeID,class, bs='fs'))
+and that each subject has a unique intercept (s(subjectID, bs='re'))
+
+#### Adding subject specific smoothers to the model
+
+The above plot looks good but now let's let the curves vary across subjects too.
+What I notice here is that it dramatically effects the standard error
+
+```{r, message=FALSE, warning=FALSE}
+g2 <- gam(md ~ s(nodeID,by=class, bs='fs') +
+               s(subjectID, bs = 're')+ 
+               s(nodeID, subjectID, bs= 're'), data=df)
+
+# Get smooth estimates
+dfs <- smooth_estimates(g2) %>% add_confint(coverage=.68)
+
+# Remove random effects and plot
+filter(dfs, type != 'Random effect') %>%
+ggplot(aes(x=nodeID,y=est)) +
+  geom_line(aes(color=class))  +
+  geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci, fill=class),alpha = 0.2 )+
+  theme_bw()
+```
+
+We can also combine our smoothers and plot the subject-specific smooth terms
+to understand the impact of letting the curves vary across subject (s(nodeID, subjectID, bs='re'))
+We can clearly see that the smoothers now vary both by group and by subject
+
+```{r, message=FALSE, warning=FALSE}
+dfs %>% 
+  filter(type!='Random effect') %>% 
+  rename(mean_est = est,
+         mean_low = lower_ci,
+         mean_high = upper_ci) %>% 
+  select(mean_est,mean_low, mean_high, nodeID,class)%>% 
+  inner_join(dfs %>%
+               filter(smooth=='s(nodeID,subjectID)') %>%
+               select(est,lower_ci, upper_ci, nodeID,subjectID) %>% 
+              inner_join(class_df, by = 'subjectID'),
+             by=c('nodeID','class')) %>%
+  mutate(est = est+mean_est,
+         lower_ci = mean_low + lower_ci,
+         upper_ci = mean_high + upper_ci) %>%
+  filter(subjectID %in% subs) %>%
+ggplot(aes(x=nodeID,y=est)) +
+  geom_line(aes(color=class))  +
+  geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci,fill=class),alpha = 0.2 )+
+  facet_grid(.~subjectID)+
+  theme_bw()
+```
+
+Let's compare these smooth estimates to the observed tract profiles
+We can see that these indiviudal profiles also vary by group and individual
+
+```{r, message=FALSE, warning=FALSE}
+df %>% 
+  filter(subjectID %in% subs) %>% 
+  ggplot(aes(x=nodeID,y=md)) +
+  geom_line(aes(color=class))  +
+  # geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci,fill=class),alpha = 0.2 )+
+  facet_grid(.~subjectID)+
+  theme_bw()
+
+```
+
+
+
+We can now calculate differences between the smooths for the different factors 
+and plot out the difference an 95% CI
+
+```{r}
+ds<-difference_smooths(g2, smooth='s(nodeID)')
+ggplot(ds,aes(x=nodeID,y=diff)) +
+  geom_line()  +
+  geom_ribbon(aes(ymin = lower, ymax=upper),alpha = 0.2 ) +
+  geom_hline(yintercept=0)+
+  theme_bw()
+
+```
+
+### GAMs modeling continuous measures along the tract profile
+
+#### GAM modeling ALSFRS along tract
+
+In addition to modeling group differences, we can also fit a GAM to explore the
+relationship between continuous measures and diffusion properties along the 
+length of a tract. First let's fit a model where we fit global smoothers over 
+the nodes, ALSFRS,and their interaction. We will also allow for individual-deviations
+from these global smooth terms using s(nodeID, subjectID, bs='fs') and
+s(ALSFRS, subjectID, bs='fs'). 
+
+```{r}
+
+# switch to bam and fREML to speed things up
+g5 <- bam(md ~  s(nodeID)+
+                s(ALSFRS)+
+                ti(ALSFRS, nodeID)+
+                s(nodeID, subjectID, bs='fs')+
+                s(ALSFRS, subjectID, bs='fs')+
+                s(subjectID, bs='re'),
+           data = df,
+           method = "fREML")
+
+summary(g5)
+```
+
+ We don't observe a significant smoother interaction between age and 
+ location on the tract (significance of ti(ALSFRS, nodeID)=0.5539)
+ Nevertheless, we will go through how to plot these types of relationships.
+
+One approach is to generate a 2-d plot illustrating how tract profiles vary
+as a function of ALSFRS
+
+```{r}
+# Estimate smooths
+dfs <- smooth_estimates(g5) %>% add_confint(coverage=.68)
+
+# 2d plot showing how tract profiles vary as a function of ALSFRS
+filter(dfs,smooth=='ti(ALSFRS,nodeID)') %>%
+ggplot(aes(x=nodeID, y=ALSFRS))+
+  geom_raster(aes(fill=est))
+```
+
+We can also use the vis.gam function to generate a 3-d surface to examine this
+relationship
+
+```{r}
+# 3d plot showing how tract profiles vary with ALSFRS
+vis.gam(g5,view=c('nodeID','ALSFRS'),theta = 130)
+```
+
+We can also factorize our continuous measure and plot separate tract profiles 
+by various levels of our continuous measure using the smooth estimates. 
+In the plot below the relationship appears linear because the ti term in our model
+is not significant. 
+
+```{r}
+dfs %>%
+  mutate(ALSFRS.factor=factor(ALSFRS)) %>%  # make ALSFRS into an ordered factor and pull out three different levels
+  filter(ALSFRS.factor== sort(unique(dfs$ALSFRS))[5] | 
+           ALSFRS.factor== sort(unique(dfs$ALSFRS))[45]|
+           ALSFRS.factor== sort(unique(dfs$ALSFRS))[99]) %>% 
+  filter(smooth=='ti(ALSFRS,nodeID)') %>%
+  ggplot(aes(x=nodeID,y=est)) +
+  geom_line(aes(color=ALSFRS.factor),show.legend = FALSE) +
+  geom_ribbon(aes(ymin = lower_ci, ymax=upper_ci,
+                  fill=ALSFRS.factor, show.legend = F),alpha = 0.2 )
+```
+
+ We can also generate predictions from our model and see how they look compared to
+ the observed data
+
+
+Here we can see our model predictions (colored by ALSFRS) compared to the observed
+tract profiles (in grey). We can see that the predictions are quite similar, 
+but do vary across individuals
+
+```{r}
+
+subs = (df %>% dplyr::select(subjectID) %>% unique())$subjectID[1:6]
+df$est_g5 = predict(g5, type="response", newdata=df)
+
+
+ggplot(data=df %>% filter(subjectID %in% subs), aes(x=nodeID, y=est_g5)) +
+  geom_line(aes(y=md),alpha=0.2)+
+  geom_line(aes(color=as.factor(ALSFRS)))+
+  facet_wrap(~ subjectID, ncol=6) +
+  theme_bw()
+```
+
+However, if we plot a couple participants who have the same ALSFRS, we can see
+that the predicted profiles vary person to person
+
+```{r}
+
+ggplot(data=df %>% filter(ALSFRS == 33), aes(x=nodeID, y=est_g5)) +
+  geom_line(aes(y=md),alpha=0.2)+
+  geom_line(aes(color=as.factor(ALSFRS)))+
+  facet_wrap(~ subjectID, ncol=6) +
+  theme_bw()
+
+
+```
+
+
+
