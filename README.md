@@ -1,1 +1,1 @@
-# Development of AFQ-Browser has moved to https://github.com/tractometry/tractable
+# Development of Tractable has moved to https://github.com/tractometry/tractable
